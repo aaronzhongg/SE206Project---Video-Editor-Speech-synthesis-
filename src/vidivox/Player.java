@@ -20,6 +20,10 @@ import uk.co.caprica.vlcj.runtime.RuntimeUtil;
 
 import com.sun.jna.Native;
 import com.sun.jna.NativeLibrary;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 /*
  * Main menu frame, contains most of the GUI and the media player
@@ -27,7 +31,8 @@ import com.sun.jna.NativeLibrary;
 public class Player extends JFrame {
 	
 	private final EmbeddedMediaPlayerComponent mediaPlayerComponent;
-
+	private final EmbeddedMediaPlayer video ;
+	volatile private boolean mouseDown = false;
 	private JPanel contentPane;
 
 	/**
@@ -66,19 +71,74 @@ public class Player extends JFrame {
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
 		
-		JButton btnNewButton = new JButton("<<");
-		btnNewButton.setBounds(33, 451, 54, 25);
-		contentPane.add(btnNewButton);
+		//Reverse button
+		JButton btnReverse = new JButton("<<");
+		btnReverse.addMouseListener(new MouseAdapter() {
+			//hold down to reverse, release to stop reversing
+			@Override
+			public void mousePressed(MouseEvent e) {
+				if (e.getButton() == MouseEvent.BUTTON1) {
+			        mouseDown = true;
+			        initVidControlThread("R");	//calls method that make a thread for this to keep GUI responsive
+			    }
+			}
+			@Override
+			public void mouseReleased(MouseEvent e) {
+				if (e.getButton() == MouseEvent.BUTTON1) {
+			        mouseDown = false;	//the thread will check this to determine when to stop
+			    }
+			}
+		});
+		btnReverse.setBounds(33, 451, 54, 25);
+		contentPane.add(btnReverse);
 		
-		JButton btnNewButton_1 = new JButton("Play");
-		btnNewButton_1.setBounds(99, 451, 117, 25);
-		contentPane.add(btnNewButton_1);
+		//Play and pause button
+		JButton btnPlay = new JButton("Play/Pause");
+		btnPlay.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				//check if video is playing and choose action accordingly
+				if(video.isPlaying()){
+					video.pause();
+				}else{
+					video.play();
+				}
+			}
+		});
+		btnPlay.setBounds(99, 451, 117, 25);
+		contentPane.add(btnPlay);
 		
-		JButton btnNewButton_2 = new JButton(">>");
-		btnNewButton_2.setBounds(228, 451, 70, 25);
-		contentPane.add(btnNewButton_2);
+		//fastforward button
+		JButton btnFastForward = new JButton(">>");
 		
+		btnFastForward.addMouseListener(new MouseAdapter() {
+			
+			//If held down it will FF, stops FFing when released.
+			@Override
+			public void mousePressed(MouseEvent e) {
+				if (e.getButton() == MouseEvent.BUTTON1) {
+			        mouseDown = true;
+			        initVidControlThread("FF");	//calls method that make a thread for this to keep GUI responsive
+			    }
+			}
+			@Override
+			public void mouseReleased(MouseEvent e) {
+				if (e.getButton() == MouseEvent.BUTTON1) {
+			        mouseDown = false;	//the thread will check this to determine when to stop
+			    }
+			}
+		});
+		
+
+		btnFastForward.setBounds(228, 451, 70, 25);
+		contentPane.add(btnFastForward);
+		
+		//Simple mute button
 		JButton btnMute = new JButton("Mute");
+		btnMute.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				video.mute();
+			}
+		});
 		btnMute.setBounds(316, 451, 70, 25);
 		contentPane.add(btnMute);
 		
@@ -111,6 +171,7 @@ public class Player extends JFrame {
 		JPanel playerPanel = new JPanel(new BorderLayout());
 		playerPanel.setBounds(33, 80, 506, 360);
 		mediaPlayerComponent = new EmbeddedMediaPlayerComponent();
+		video = mediaPlayerComponent.getMediaPlayer();
 		playerPanel.add(mediaPlayerComponent, BorderLayout.CENTER);
 		contentPane.add(playerPanel);
 		
@@ -118,5 +179,34 @@ public class Player extends JFrame {
 		JButton btnBrowseVideo = new JButton("Browse Video");
 		btnBrowseVideo.setBounds(33, 43, 168, 25);
 		contentPane.add(btnBrowseVideo);
+	}
+	
+	/*
+	 * check method to ensure concurrency when multiple events are fired
+	 * This is just in case other events are fired while fastforwarding or reversing (highly unlikely)
+	 */
+	volatile private boolean isRunning = false;
+	private synchronized boolean checkAndMark() {
+	    if (isRunning) return false;
+	    isRunning = true;
+	    return true;
+	}
+	
+	private void initVidControlThread(String arg){	                    
+		if (checkAndMark()) {	//don't start another thread if this one is still running
+	        new Thread() {
+	            public void run() {
+	                do {
+	                	//Check which button was pressed
+	                	if(arg.equals("FF")){
+	                		video.skip(10);
+	                	}else{
+	                		video.skip(-10);
+	                	}
+	                } while (mouseDown); //do until released
+	                isRunning = false;	//no longer running
+	            }
+	        }.start();	
+	    }
 	}
 }
