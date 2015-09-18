@@ -28,7 +28,7 @@ public class Player extends JFrame {
 			public void run() {
 				try {
 					Player frame = new Player();
-					frame.setVisible(true);
+					frame.setVisible(false);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
