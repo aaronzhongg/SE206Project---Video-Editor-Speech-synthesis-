@@ -71,8 +71,7 @@ public class Player extends JFrame {
 		contentPane.add(btnNewButton);
 		
 		JButton btnNewButton_1 = new JButton("Play");
-		btnNewButton_1.setBounds(99, 451, 117, 25)
-;
+		btnNewButton_1.setBounds(99, 451, 117, 25);
 		contentPane.add(btnNewButton_1);
 		
 		JButton btnNewButton_2 = new JButton(">>");
