@@ -11,6 +11,7 @@ public class Player extends JFrame {
 
 	private JPanel contentPane;
 
+	//aladmladmladmlallll alloha aku
 	/**
 	 * Launch the application.
 	 */
