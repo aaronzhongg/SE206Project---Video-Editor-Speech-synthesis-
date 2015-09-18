@@ -18,6 +18,8 @@ public class Player extends JFrame {
 	private JPanel contentPane;
 	
 	//Testing if git werks from my side (alex)
+
+	//aladmladmladmlallll alloha aku
 	/**
 	 * Launch the application.
 	 */
