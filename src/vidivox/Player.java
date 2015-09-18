@@ -13,22 +13,41 @@ import javax.swing.JTextPane;
 import javax.swing.JLabel;
 import java.awt.Font;
 
+import uk.co.caprica.vlcj.binding.LibVlc;
+import uk.co.caprica.vlcj.component.EmbeddedMediaPlayerComponent;
+import uk.co.caprica.vlcj.player.embedded.EmbeddedMediaPlayer;
+import uk.co.caprica.vlcj.runtime.RuntimeUtil;
+
+import com.sun.jna.Native;
+import com.sun.jna.NativeLibrary;
+
+/*
+ * Main menu frame, contains most of the GUI and the media player
+ */
 public class Player extends JFrame {
+	
+	private final EmbeddedMediaPlayerComponent mediaPlayerComponent;
 
 	private JPanel contentPane;
-	
-	//Testing if git werks from my side (alex)
 
-	//aladmladmladmlallll alloha aku
 	/**
 	 * Launch the application.
 	 */
 	public static void main(String[] args) {
+		
+		//add vlc search path
+		NativeLibrary.addSearchPath(
+	            RuntimeUtil.getLibVlcLibraryName(), "/Applications/vlc-2.0.0/VLC.app/Contents/MacOS/lib"
+	        );
+	    Native.loadLibrary(RuntimeUtil.getLibVlcLibraryName(), LibVlc.class);
+	        
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
 					Player frame = new Player();
 					frame.setVisible(true);
+					//play big buck bunny, will change later
+			        frame.mediaPlayerComponent.getMediaPlayer().playMedia("sample_video_big_buck_bunny_1_minute.avi");
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -65,7 +84,7 @@ public class Player extends JFrame {
 		contentPane.add(btnMute);
 		
 		JButton btnListen = new JButton("Listen");
-		btnListen.setBounds(500, 192, 155, 40);
+		btnListen.setBounds(551, 192, 135, 40);
 		contentPane.add(btnListen);
 		
 		JButton btnCreateMp = new JButton("Create mp3");
@@ -73,20 +92,32 @@ public class Player extends JFrame {
 		contentPane.add(btnCreateMp);
 		
 		JTextPane textPane = new JTextPane();
-		textPane.setBounds(500, 12, 353, 144);
+		textPane.setBounds(556, 12, 297, 144);
 		contentPane.add(textPane);
 		
 		JButton btnBrowseMp = new JButton("Browse mp3...");
-		btnBrowseMp.setBounds(500, 272, 155, 40);
+		btnBrowseMp.setBounds(551, 267, 155, 40);
 		contentPane.add(btnBrowseMp);
 		
 		JLabel lblNewLabel = new JLabel("Insert mp3 path");
-		lblNewLabel.setBounds(500, 313, 353, 15);
+		lblNewLabel.setBounds(556, 313, 297, 15);
 		contentPane.add(lblNewLabel);
 		
 		JButton btnNewButton_3 = new JButton("Add Commentary\n");
 		btnNewButton_3.setFont(new Font("Dialog", Font.BOLD, 22));
-		btnNewButton_3.setBounds(500, 365, 353, 111);
+		btnNewButton_3.setBounds(551, 365, 302, 111);
 		contentPane.add(btnNewButton_3);
+		
+		//panel for video player
+		JPanel playerPanel = new JPanel(new BorderLayout());
+		playerPanel.setBounds(33, 80, 506, 360);
+		mediaPlayerComponent = new EmbeddedMediaPlayerComponent();
+		playerPanel.add(mediaPlayerComponent, BorderLayout.CENTER);
+		contentPane.add(playerPanel);
+		
+		//button for choosing a video to play
+		JButton btnBrowseVideo = new JButton("Browse Video");
+		btnBrowseVideo.setBounds(33, 43, 168, 25);
+		contentPane.add(btnBrowseVideo);
 	}
 }
