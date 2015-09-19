@@ -262,6 +262,7 @@ public class Player extends JFrame {
 						Process process = makeWav.start();
 						process.waitFor();
 						Process converse = convert.start();
+						converse.waitFor();
 
 					} catch (IOException e) {
 						e.printStackTrace();
