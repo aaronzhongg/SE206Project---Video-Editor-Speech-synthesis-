@@ -42,6 +42,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Scanner;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 import javax.swing.JTextArea;
 import javax.swing.DropMode;
@@ -61,7 +64,8 @@ public class Player extends JFrame {
 	private File mp3File;
 	private DefaultStyledDocument docfilt = new DefaultStyledDocument();
 	private JLabel lblChars;
-	final JLabel mp3Label;
+	private final JLabel mp3Label;
+	private Path path;
 	/**
 	 * Launch the application.
 	 */
@@ -252,16 +256,31 @@ public class Player extends JFrame {
 			public void actionPerformed(ActionEvent arg0) {
 				//ask user to enter desired output name
 				String output = JOptionPane.showInputDialog("Enter output name: ");
-				ProcessBuilder makeWav = new ProcessBuilder("/bin/bash", "-c", "echo " + txtArea.getText() + " | text2wave | lame - "+output+".mp3");
+				//create mp3 file
+				ProcessBuilder makeWav = new ProcessBuilder("/bin/bash", "-c", "echo " + txtArea.getText() + " | text2wave -o " + output +".wav");
+				ProcessBuilder convert = new ProcessBuilder("/bin/bash", "-c", "ffmpeg -i " + output + ".wav -f mp3 "+ output+".mp3");
 				try {
 					Process process = makeWav.start();
+					Process converse = convert.start();
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
+				
+				//set the newly create file as the selected mp3 file
 				mp3File = new File(output+".mp3");
 				mp3Label.setText(mp3File.getName());
+				
+				//remove the wav file that was created
+				try {
+					path = FileSystems.getDefault().getPath(output+".wav");
+					Files.deleteIfExists(path);
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
 			}
 		});
+		
+		
 		btnCreateMp.setBounds(698, 192, 155, 40);
 		contentPane.add(btnCreateMp);
 		
