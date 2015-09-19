@@ -12,12 +12,8 @@ import javax.swing.text.DefaultStyledDocument;
 import javax.swing.JButton;
 import javax.swing.JOptionPane;
 import javax.swing.JFileChooser;
-import javax.swing.JTextField;
-import javax.swing.SwingConstants;
-import javax.swing.JTextPane;
 import javax.swing.JLabel;
 import javax.swing.SwingWorker;
-import javax.swing.text.*;
 import javax.swing.event.*;
 import javax.swing.Timer;
 
@@ -25,8 +21,6 @@ import java.awt.Font;
 
 import uk.co.caprica.vlcj.binding.LibVlc;
 import uk.co.caprica.vlcj.component.EmbeddedMediaPlayerComponent;
-import uk.co.caprica.vlcj.player.MediaPlayer;
-import uk.co.caprica.vlcj.player.MediaPlayerEventAdapter;
 import uk.co.caprica.vlcj.player.embedded.EmbeddedMediaPlayer;
 import uk.co.caprica.vlcj.runtime.RuntimeUtil;
 
@@ -39,20 +33,12 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.Scanner;
-import java.nio.file.FileSystems;
-import java.nio.file.Files;
 import java.nio.file.Path;
 
 import javax.swing.JTextArea;
-import javax.swing.DropMode;
-
 import components.DocumentSizeFilter;
-import javax.swing.ImageIcon;
 
 /*
  * Main menu frame, contains most of the GUI and the media player
@@ -68,7 +54,6 @@ public class Player extends JFrame {
 	private DefaultStyledDocument docfilt = new DefaultStyledDocument();
 	private JLabel lblChars;
 	private final JLabel mp3Label;
-	private Path path;
 	private JButton btnAddCom;
 	/**
 	 * Launch the application.
@@ -340,6 +325,7 @@ public class Player extends JFrame {
 		btnAddCom = new JButton("Add Commentary\n");
 		btnAddCom.setFont(new Font("Dialog", Font.BOLD, 22));
 		btnAddCom.setBounds(551, 365, 302, 111);
+		
 		btnAddCom.setEnabled(false);
 		contentPane.add(btnAddCom);
 
@@ -432,6 +418,12 @@ public class Player extends JFrame {
 						}else{
 							video.skip(-10);
 						}
+						try {
+							sleep(1);	//Slight delay to prevent big jumps
+						} catch (InterruptedException e) {
+							e.printStackTrace();
+						}
+						
 					} while (mouseDown); //do until released
 					isRunning = false;	//no longer running
 				}
