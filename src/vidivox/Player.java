@@ -161,27 +161,24 @@ public class Player extends JFrame {
 		btnFastForward.setBounds(228, 451, 70, 25);
 		contentPane.add(btnFastForward);
 
-		//set the maximum character to 125 so the festival voice doesn't die
-		docfilt.setDocumentFilter(new DocumentSizeFilter(125));
+		//set the maximum character to 200 so the festival voice doesn't die
+		docfilt.setDocumentFilter(new DocumentSizeFilter(200));
 		//add a listener to show user how many characters remaining
 		docfilt.addDocumentListener(new DocumentListener(){
 
 			@Override
 			public void changedUpdate(DocumentEvent e) {
 				charCount();
-
 			}
 
 			@Override
 			public void insertUpdate(DocumentEvent e) {
 				charCount();
-
 			}
 
 			@Override
 			public void removeUpdate(DocumentEvent e) {
 				charCount();
-
 			}
 
 		});
@@ -379,7 +376,7 @@ public class Player extends JFrame {
 	}
 
 	private void charCount() {
-		lblChars.setText((125 - docfilt.getLength())+"/125");
+		lblChars.setText((125 - docfilt.getLength())+"/200");
 
 	}
 
