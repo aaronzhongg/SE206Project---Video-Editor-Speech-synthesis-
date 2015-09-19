@@ -35,16 +35,23 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.nio.file.Path;
 
 import javax.swing.JTextArea;
 import components.DocumentSizeFilter;
+import java.awt.Color;
+import java.awt.SystemColor;
+import javax.swing.UIManager;
 
 /*
- * Main menu frame, contains most of the GUI and the media player
+ * This is the VIDIVOX prototype for SE206 assignment 3
+ * Authors: Kaimin Li, Aaron Zhong
+ * upi: kli438, azho472
  */
 public class Player extends JFrame {
 
+	/*
+	 * Instance fields useful throughout the player
+	 */
 	private final EmbeddedMediaPlayerComponent mediaPlayerComponent;
 	private final EmbeddedMediaPlayer video ;
 	volatile private boolean mouseDown = false;
@@ -79,18 +86,21 @@ public class Player extends JFrame {
 	}
 
 
-	//Create the frame.
+	//Main menu frame, contains most of the GUI and the media player
 
 	public Player() {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 865, 511);
 		contentPane = new JPanel();
+		contentPane.setBackground(Color.DARK_GRAY);
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
 
 		//Reverse button
 		JButton btnReverse = new JButton("<<");
+		btnReverse.setForeground(SystemColor.text);
+		btnReverse.setBackground(Color.GRAY);
 		btnReverse.addMouseListener(new MouseAdapter() {
 			//hold down to reverse, release to stop reversing
 			@Override
@@ -112,6 +122,8 @@ public class Player extends JFrame {
 
 		//Play and pause button
 		JButton btnPlay = new JButton("Play/Pause");
+		btnPlay.setForeground(SystemColor.text);
+		btnPlay.setBackground(Color.GRAY);
 		btnPlay.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				//check if video is playing and choose action accordingly
@@ -127,6 +139,8 @@ public class Player extends JFrame {
 
 		//fastforward button
 		JButton btnFastForward = new JButton(">>");
+		btnFastForward.setForeground(SystemColor.text);
+		btnFastForward.setBackground(Color.GRAY);
 
 		btnFastForward.addMouseListener(new MouseAdapter() {
 
@@ -184,6 +198,8 @@ public class Player extends JFrame {
 
 		//Simple mute button
 		JButton btnMute = new JButton("Mute");
+		btnMute.setForeground(SystemColor.text);
+		btnMute.setBackground(Color.GRAY);
 		btnMute.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				video.mute();
@@ -194,6 +210,8 @@ public class Player extends JFrame {
 
 		//Button for listening to text entered
 		final JButton btnListen = new JButton("Listen");
+		btnListen.setBackground(Color.GRAY);
+		btnListen.setForeground(Color.WHITE);
 		btnListen.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 
@@ -236,6 +254,8 @@ public class Player extends JFrame {
 		contentPane.add(btnListen);
 
 		JButton btnCreateMp = new JButton("Create mp3");
+		btnCreateMp.setBackground(Color.GRAY);
+		btnCreateMp.setForeground(Color.WHITE);
 		btnCreateMp.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				//ask user to enter desired output name
@@ -297,11 +317,14 @@ public class Player extends JFrame {
 
 		//label for mp3 file
 		mp3Label = new JLabel("No mp3 file chosen");
+		mp3Label.setForeground(Color.WHITE);
 		mp3Label.setBounds(556, 313, 297, 15);
 		contentPane.add(mp3Label);
 
 		//Browser for mp3 files
 		JButton btnBrowseMp = new JButton("Browse mp3...");
+		btnBrowseMp.setBackground(Color.GRAY);
+		btnBrowseMp.setForeground(Color.WHITE);
 		btnBrowseMp.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				//create file chooser and filter (mp3)
@@ -323,6 +346,8 @@ public class Player extends JFrame {
 		contentPane.add(btnBrowseMp);
 
 		btnAddCom = new JButton("Add Commentary\n");
+		btnAddCom.setBackground(Color.GRAY);
+		btnAddCom.setForeground(Color.WHITE);
 		btnAddCom.setFont(new Font("Dialog", Font.BOLD, 22));
 		btnAddCom.setBounds(551, 365, 302, 111);
 		
@@ -336,6 +361,7 @@ public class Player extends JFrame {
 		video = mediaPlayerComponent.getMediaPlayer();
 
 		lblChars = new JLabel("200/200");
+		lblChars.setForeground(Color.WHITE);
 		lblChars.setBounds(795, 170, 70, 15);
 		contentPane.add(lblChars);
 
@@ -344,11 +370,14 @@ public class Player extends JFrame {
 
 		//video label, changes with user selection
 		final JLabel videoLabel = new JLabel("No video chosen");
+		videoLabel.setForeground(Color.WHITE);
 		videoLabel.setBounds(228, 14, 506, 15);
 		contentPane.add(videoLabel);
 
 		//button for choosing a video to play
 		JButton btnBrowseVideo = new JButton("Browse Video");
+		btnBrowseVideo.setForeground(SystemColor.text);
+		btnBrowseVideo.setBackground(Color.GRAY);
 		btnBrowseVideo.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				//Add file chooser as well as set a filter so that user only picks avi or mp4 files
@@ -373,6 +402,7 @@ public class Player extends JFrame {
 		//label for timer
 
 		final JLabel timerLabel = new JLabel("0 sec");
+		timerLabel.setForeground(Color.WHITE);
 		timerLabel.setBounds(404, 456, 70, 15);
 		contentPane.add(timerLabel);
 
