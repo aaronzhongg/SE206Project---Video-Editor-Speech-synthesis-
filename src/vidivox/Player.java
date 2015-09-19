@@ -61,7 +61,7 @@ public class Player extends JFrame {
 	private File mp3File;
 	private DefaultStyledDocument docfilt = new DefaultStyledDocument();
 	private JLabel lblChars;
-
+	final JLabel mp3Label;
 	/**
 	 * Launch the application.
 	 */
@@ -187,7 +187,7 @@ public class Player extends JFrame {
 		final JTextArea txtArea = new JTextArea();
 		txtArea.setWrapStyleWord(true);
 		txtArea.setRows(5);
-		txtArea.setToolTipText("Enter text for test to speech. ");
+		txtArea.setToolTipText("Enter text for text to speech. ");
 		txtArea.setFont(new Font("Dialog", Font.PLAIN, 15));
 		txtArea.setLineWrap(true);
 		txtArea.setBounds(551, 12, 302, 151);
@@ -242,12 +242,15 @@ public class Player extends JFrame {
 				worker.execute();
 			}
 		});
+		
+		//Button to allow user to create an mp3 file from the text entered
 		btnListen.setBounds(551, 192, 135, 40);
 		contentPane.add(btnListen);
 
 		JButton btnCreateMp = new JButton("Create mp3");
 		btnCreateMp.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
+				//ask user to enter desired output name
 				String output = JOptionPane.showInputDialog("Enter output name: ");
 				ProcessBuilder makeWav = new ProcessBuilder("/bin/bash", "-c", "echo " + txtArea.getText() + " | text2wave | lame - "+output+".mp3");
 				try {
@@ -255,13 +258,15 @@ public class Player extends JFrame {
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
+				mp3File = new File(output+".mp3");
+				mp3Label.setText(mp3File.getName());
 			}
 		});
 		btnCreateMp.setBounds(698, 192, 155, 40);
 		contentPane.add(btnCreateMp);
 		
 		//label for mp3 file
-		final JLabel mp3Label = new JLabel("No mp3 file chosen");
+		mp3Label = new JLabel("No mp3 file chosen");
 		mp3Label.setBounds(556, 313, 297, 15);
 		contentPane.add(mp3Label);
 		
