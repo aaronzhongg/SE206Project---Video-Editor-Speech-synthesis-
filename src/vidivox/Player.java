@@ -77,9 +77,7 @@ public class Player extends JFrame {
 			public void run() {
 				try {
 					Player frame = new Player();
-					frame.setVisible(true);
-					
-					
+					frame.setVisible(true);					
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -87,9 +85,9 @@ public class Player extends JFrame {
 		});
 	}
 
-	/**
-	 * Create the frame.
-	 */
+	
+	//Create the frame.
+	 
 	public Player() {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 865, 511);
@@ -305,8 +303,6 @@ public class Player extends JFrame {
 		lblChars.setBounds(795, 170, 70, 15);
 		contentPane.add(lblChars);
 		
-
-		
 		playerPanel.add(mediaPlayerComponent, BorderLayout.CENTER);
 		contentPane.add(playerPanel);
 		
@@ -323,7 +319,7 @@ public class Player extends JFrame {
 				final JFileChooser fileChooser = new JFileChooser();
 				fileChooser.setAcceptAllFileFilterUsed(false);
 				FileFilter filter = new FileNameExtensionFilter("Video files (avi and mp4)", new String[] {"avi", "mp4","AVI","MP4"});
-				fileChooser.setFileFilter(filter);
+				fileChooser.setFileFilter(filter); 
 				int returnVal = fileChooser.showOpenDialog(new JFrame());
 				
 				if(returnVal == JFileChooser.APPROVE_OPTION){
