@@ -66,6 +66,7 @@ public class Player extends JFrame {
 	private JLabel lblChars;
 	private final JLabel mp3Label;
 	private Path path;
+	private JButton btnAddCom;
 	/**
 	 * Launch the application.
 	 */
@@ -318,13 +319,15 @@ public class Player extends JFrame {
 				if(returnVal == JFileChooser.APPROVE_OPTION){
 					mp3File = fileChooser.getSelectedFile();
 					mp3Label.setText(mp3File.getName());
+					btnAddCom.setEnabled(true);
+					
 				}
 			}
 		});
 		btnBrowseMp.setBounds(551, 267, 155, 40);
 		contentPane.add(btnBrowseMp);
 
-		JButton btnAddCom = new JButton("Add Commentary\n");
+		btnAddCom = new JButton("Add Commentary\n");
 		btnAddCom.setFont(new Font("Dialog", Font.BOLD, 22));
 		btnAddCom.setBounds(551, 365, 302, 111);
 		btnAddCom.setEnabled(false);
@@ -364,6 +367,7 @@ public class Player extends JFrame {
 					videoFile = fileChooser.getSelectedFile();
 					video.playMedia(videoFile.getAbsolutePath());
 					videoLabel.setText(videoFile.getName());
+					btnAddCom.setEnabled(true);
 				}
 			}
 		});
