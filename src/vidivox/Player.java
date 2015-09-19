@@ -54,7 +54,7 @@ public class Player extends JFrame {
 	volatile private boolean mouseDown = false;
 	private JPanel contentPane;
 	private DefaultStyledDocument docfilt = new DefaultStyledDocument();
-	
+	private JLabel lblChars;
 
 	/**
 	 * Launch the application.
@@ -161,19 +161,19 @@ public class Player extends JFrame {
 
 			@Override
 			public void changedUpdate(DocumentEvent e) {
-				
+				charCount();
 				
 			}
 
 			@Override
 			public void insertUpdate(DocumentEvent e) {
-				
+				charCount();
 				
 			}
 
 			@Override
 			public void removeUpdate(DocumentEvent e) {
-				
+				charCount();
 				
 			}
 			
@@ -262,8 +262,13 @@ public class Player extends JFrame {
 		playerPanel.setBounds(33, 80, 506, 360);
 		mediaPlayerComponent = new EmbeddedMediaPlayerComponent();
 		video = mediaPlayerComponent.getMediaPlayer();
+		
+		lblChars = new JLabel("125/125");
+		lblChars.setBounds(795, 170, 70, 15);
+		contentPane.add(lblChars);
+		
 
-
+		
 		playerPanel.add(mediaPlayerComponent, BorderLayout.CENTER);
 		contentPane.add(playerPanel);
 
@@ -287,6 +292,13 @@ public class Player extends JFrame {
         t.start();
         
 	}
+	
+	private void charCount() {
+		lblChars.setText((125 - docfilt.getLength())+"/125");
+		
+	}
+
+	
 
 	/*
 	 * check method to ensure concurrency when multiple events are fired
