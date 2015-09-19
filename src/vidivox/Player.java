@@ -10,6 +10,7 @@ import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.text.DefaultStyledDocument;
 import javax.swing.JButton;
+import javax.swing.JOptionPane;
 import javax.swing.JFileChooser;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
@@ -19,7 +20,6 @@ import javax.swing.SwingWorker;
 import javax.swing.text.*;
 import javax.swing.event.*;
 import javax.swing.Timer;
-
 
 import java.awt.Font;
 
@@ -61,7 +61,7 @@ public class Player extends JFrame {
 	private File mp3File;
 	private DefaultStyledDocument docfilt = new DefaultStyledDocument();
 	private JLabel lblChars;
-
+	final JLabel mp3Label;
 	/**
 	 * Launch the application.
 	 */
@@ -187,7 +187,7 @@ public class Player extends JFrame {
 		final JTextArea txtArea = new JTextArea();
 		txtArea.setWrapStyleWord(true);
 		txtArea.setRows(5);
-		txtArea.setToolTipText("Enter text for test to speech. ");
+		txtArea.setToolTipText("Enter text for text to speech. ");
 		txtArea.setFont(new Font("Dialog", Font.PLAIN, 15));
 		txtArea.setLineWrap(true);
 		txtArea.setBounds(551, 41, 302, 122);
@@ -242,15 +242,31 @@ public class Player extends JFrame {
 				worker.execute();
 			}
 		});
+		
+		//Button to allow user to create an mp3 file from the text entered
 		btnListen.setBounds(551, 192, 135, 40);
 		contentPane.add(btnListen);
 
 		JButton btnCreateMp = new JButton("Create mp3");
+		btnCreateMp.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				//ask user to enter desired output name
+				String output = JOptionPane.showInputDialog("Enter output name: ");
+				ProcessBuilder makeWav = new ProcessBuilder("/bin/bash", "-c", "echo " + txtArea.getText() + " | text2wave | lame - "+output+".mp3");
+				try {
+					Process process = makeWav.start();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+				mp3File = new File(output+".mp3");
+				mp3Label.setText(mp3File.getName());
+			}
+		});
 		btnCreateMp.setBounds(698, 192, 155, 40);
 		contentPane.add(btnCreateMp);
 		
 		//label for mp3 file
-		JLabel mp3Label = new JLabel("No mp3 file chosen");
+		mp3Label = new JLabel("No mp3 file chosen");
 		mp3Label.setBounds(556, 313, 297, 15);
 		contentPane.add(mp3Label);
 		
@@ -295,8 +311,8 @@ public class Player extends JFrame {
 		contentPane.add(playerPanel);
 		
 		//video label, changes with user selection
-		JLabel videoLabel = new JLabel("No video chosen");
-		videoLabel.setBounds(316, 14, 506, 15);
+		final JLabel videoLabel = new JLabel("No video chosen");
+		videoLabel.setBounds(228, 14, 506, 15);
 		contentPane.add(videoLabel);
 		
 		//button for choosing a video to play
