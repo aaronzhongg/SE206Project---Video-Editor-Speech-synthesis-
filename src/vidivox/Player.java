@@ -89,9 +89,9 @@ public class Player extends JFrame {
 		});
 	}
 
-	
+
 	//Create the frame.
-	 
+
 	public Player() {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 865, 511);
@@ -169,21 +169,21 @@ public class Player extends JFrame {
 			@Override
 			public void changedUpdate(DocumentEvent e) {
 				charCount();
-				
+
 			}
 
 			@Override
 			public void insertUpdate(DocumentEvent e) {
 				charCount();
-				
+
 			}
 
 			@Override
 			public void removeUpdate(DocumentEvent e) {
 				charCount();
-				
+
 			}
-			
+
 		});
 		//simple text area for the user to enter text
 		final JTextArea txtArea = new JTextArea();
@@ -210,18 +210,18 @@ public class Player extends JFrame {
 		final JButton btnListen = new JButton("Listen");
 		btnListen.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				
+
 				//disable listen button so speak only one thing at a time
 				btnListen.setEnabled(false);
 
-			
+
 				SwingWorker worker = new SwingWorker<Void, Integer>() {
 
 					@Override
 					protected Void doInBackground() throws Exception {
 						//run festival in bash from the entered text
 						ProcessBuilder builder = new ProcessBuilder("/bin/bash", "-c", "echo " + txtArea.getText() + " | festival --tts");
-						
+
 						try {
 							//begin process and wait for process to complete
 							Process process = builder.start();
@@ -239,12 +239,12 @@ public class Player extends JFrame {
 						btnListen.setEnabled(true);
 					}
 				};
-				
+
 				//execute SwingWorker
 				worker.execute();
 			}
 		});
-		
+
 		//Button to allow user to create an mp3 file from the text entered
 		btnListen.setBounds(551, 192, 135, 40);
 		contentPane.add(btnListen);
@@ -254,39 +254,45 @@ public class Player extends JFrame {
 			public void actionPerformed(ActionEvent arg0) {
 				//ask user to enter desired output name
 				String output = JOptionPane.showInputDialog("Enter output name: ");
-				//create mp3 file
-				ProcessBuilder makeWav = new ProcessBuilder("/bin/bash", "-c", "echo " + txtArea.getText() + " | text2wave -o " + output +".wav");
-				ProcessBuilder convert = new ProcessBuilder("/bin/bash", "-c", "ffmpeg -i " + output + ".wav -f mp3 "+ output+".mp3");
-				try {
-					Process process = makeWav.start();
-					Process converse = convert.start();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-				
-				//set the newly create file as the selected mp3 file
-				mp3File = new File(output+".mp3");
-				mp3Label.setText(mp3File.getName());
-				
-				//remove the wav file that was created
-				try {
-					path = FileSystems.getDefault().getPath(output+".wav");
-					Files.deleteIfExists(path);
-				} catch (IOException e) {
-					e.printStackTrace();
+				if (output != null){
+					//create mp3 file
+					ProcessBuilder makeWav = new ProcessBuilder("/bin/bash", "-c", "echo " + txtArea.getText() + " | text2wave -o " + output +".wav");
+					ProcessBuilder convert = new ProcessBuilder("/bin/bash", "-c", "ffmpeg -i " + output + ".wav -f mp3 "+ output+".mp3");
+					try {
+						Process process = makeWav.start();
+						process.waitFor();
+						Process converse = convert.start();
+
+					} catch (IOException e) {
+						e.printStackTrace();
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+
+					//set the newly create file as the selected mp3 file
+					mp3File = new File(output+".mp3");
+					mp3Label.setText(mp3File.getName());
+
+					//remove the wav file that was created
+					try {
+						File del = new File(output+".wav");
+						del.delete();
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
 				}
 			}
 		});
-		
-		
+
+
 		btnCreateMp.setBounds(698, 192, 155, 40);
 		contentPane.add(btnCreateMp);
-		
+
 		//label for mp3 file
 		mp3Label = new JLabel("No mp3 file chosen");
 		mp3Label.setBounds(556, 313, 297, 15);
 		contentPane.add(mp3Label);
-		
+
 		//Browser for mp3 files
 		JButton btnBrowseMp = new JButton("Browse mp3...");
 		btnBrowseMp.addActionListener(new ActionListener() {
@@ -297,7 +303,7 @@ public class Player extends JFrame {
 				FileFilter filter = new FileNameExtensionFilter("mp3 files", new String[] {"mp3","MP3"});
 				fileChooser.setFileFilter(filter);
 				int returnVal = fileChooser.showOpenDialog(new JFrame());
-				
+
 				if(returnVal == JFileChooser.APPROVE_OPTION){
 					mp3File = fileChooser.getSelectedFile();
 					mp3Label.setText(mp3File.getName());
@@ -317,19 +323,19 @@ public class Player extends JFrame {
 		playerPanel.setBounds(33, 41, 506, 399);
 		mediaPlayerComponent = new EmbeddedMediaPlayerComponent();
 		video = mediaPlayerComponent.getMediaPlayer();
-		
+
 		lblChars = new JLabel("125/125");
 		lblChars.setBounds(795, 170, 70, 15);
 		contentPane.add(lblChars);
-		
+
 		playerPanel.add(mediaPlayerComponent, BorderLayout.CENTER);
 		contentPane.add(playerPanel);
-		
+
 		//video label, changes with user selection
 		final JLabel videoLabel = new JLabel("No video chosen");
 		videoLabel.setBounds(228, 14, 506, 15);
 		contentPane.add(videoLabel);
-		
+
 		//button for choosing a video to play
 		JButton btnBrowseVideo = new JButton("Browse Video");
 		btnBrowseVideo.addActionListener(new ActionListener() {
@@ -340,7 +346,7 @@ public class Player extends JFrame {
 				FileFilter filter = new FileNameExtensionFilter("Video files (avi and mp4)", new String[] {"avi", "mp4","AVI","MP4"});
 				fileChooser.setFileFilter(filter); 
 				int returnVal = fileChooser.showOpenDialog(new JFrame());
-				
+
 				if(returnVal == JFileChooser.APPROVE_OPTION){
 					//play the file chosen
 					videoFile = fileChooser.getSelectedFile();
@@ -351,15 +357,15 @@ public class Player extends JFrame {
 		});
 		btnBrowseVideo.setBounds(33, 9, 168, 25);
 		contentPane.add(btnBrowseVideo);
-		
+
 		//label for timer
 
 		final JLabel timerLabel = new JLabel("0 sec");
 		timerLabel.setBounds(404, 456, 70, 15);
 		contentPane.add(timerLabel);
-		
-		
-		
+
+
+
 		//Timer used to check video time
 		Timer t = new Timer(200, new ActionListener() {
 			@Override
@@ -367,16 +373,16 @@ public class Player extends JFrame {
 				timerLabel.setText((video.getTime()/1000)+ " sec");	//get video time
 			}
 		}); 
-        t.start();
-        
-	}
-	
-	private void charCount() {
-		lblChars.setText((125 - docfilt.getLength())+"/125");
-		
+		t.start();
+
 	}
 
-	
+	private void charCount() {
+		lblChars.setText((125 - docfilt.getLength())+"/125");
+
+	}
+
+
 
 	/*
 	 * check method to ensure concurrency when multiple events are fired
