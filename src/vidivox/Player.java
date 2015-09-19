@@ -52,6 +52,7 @@ import javax.swing.JTextArea;
 import javax.swing.DropMode;
 
 import components.DocumentSizeFilter;
+import javax.swing.ImageIcon;
 
 /*
  * Main menu frame, contains most of the GUI and the media player
@@ -120,7 +121,7 @@ public class Player extends JFrame {
 				}
 			}
 		});
-		btnReverse.setBounds(33, 451, 54, 25);
+		btnReverse.setBounds(33, 451, 70, 25);
 		contentPane.add(btnReverse);
 
 		//Play and pause button
@@ -135,7 +136,7 @@ public class Player extends JFrame {
 				}
 			}
 		});
-		btnPlay.setBounds(99, 451, 117, 25);
+		btnPlay.setBounds(112, 451, 117, 25);
 		contentPane.add(btnPlay);
 
 		//fastforward button
@@ -160,7 +161,7 @@ public class Player extends JFrame {
 		});
 
 
-		btnFastForward.setBounds(228, 451, 70, 25);
+		btnFastForward.setBounds(241, 451, 70, 25);
 		contentPane.add(btnFastForward);
 
 		//set the maximum character to 200 so the festival voice doesn't die
@@ -202,7 +203,7 @@ public class Player extends JFrame {
 				video.mute();
 			}
 		});
-		btnMute.setBounds(316, 451, 70, 25);
+		btnMute.setBounds(323, 451, 70, 25);
 		contentPane.add(btnMute);
 
 		//Button for listening to text entered
