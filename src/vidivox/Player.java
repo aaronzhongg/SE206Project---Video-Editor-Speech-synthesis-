@@ -324,10 +324,11 @@ public class Player extends JFrame {
 		btnBrowseMp.setBounds(551, 267, 155, 40);
 		contentPane.add(btnBrowseMp);
 
-		JButton btnNewButton_3 = new JButton("Add Commentary\n");
-		btnNewButton_3.setFont(new Font("Dialog", Font.BOLD, 22));
-		btnNewButton_3.setBounds(551, 365, 302, 111);
-		contentPane.add(btnNewButton_3);
+		JButton btnAddCom = new JButton("Add Commentary\n");
+		btnAddCom.setFont(new Font("Dialog", Font.BOLD, 22));
+		btnAddCom.setBounds(551, 365, 302, 111);
+		btnAddCom.setEnabled(false);
+		contentPane.add(btnAddCom);
 
 		//panel for video player
 		JPanel playerPanel = new JPanel(new BorderLayout());
