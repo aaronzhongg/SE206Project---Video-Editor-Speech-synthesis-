@@ -337,7 +337,7 @@ public class Player extends JFrame {
 				if(returnVal == JFileChooser.APPROVE_OPTION){
 					mp3File = fileChooser.getSelectedFile();
 					mp3Label.setText(mp3File.getName());
-					if (videoFile.length() != 0) {
+					if (videoFile != null) {
 						btnAddCom.setEnabled(true);
 					}
 				}
@@ -432,7 +432,7 @@ public class Player extends JFrame {
 					videoFile = fileChooser.getSelectedFile();
 					video.playMedia(videoFile.getAbsolutePath());
 					videoLabel.setText(videoFile.getName());
-					if (mp3File.length() != 0){
+					if (mp3File != null){
 						btnAddCom.setEnabled(true);
 					}
 				}
