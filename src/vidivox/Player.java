@@ -167,11 +167,12 @@ public class Player extends JFrame {
 		btnMute.setBounds(316, 451, 70, 25);
 		contentPane.add(btnMute);
 
+		//Button for listening to text entered
 		final JButton btnListen = new JButton("Listen");
 		btnListen.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				//BackgroundTask task = new BackgroundTask(txtArea.getText(),btnListen);
-
+				
+				//disable listen button so speak one thing at a time
 				btnListen.setEnabled(false);
 
 				SwingWorker worker = new SwingWorker<Void, Integer>() {
@@ -179,13 +180,10 @@ public class Player extends JFrame {
 					@Override
 					protected Void doInBackground() throws Exception {
 						ProcessBuilder builder = new ProcessBuilder("/bin/bash", "-c", "echo " + txtArea.getText() + " | festival --tts");
-						ProcessBuilder waiter = new ProcessBuilder("/bin/bash", "-c", "wait");
-
-
+						
 						try {
 							Process process = builder.start();
-							Process wait = waiter.start();
-
+							process.waitFor();
 
 						} catch (IOException e) {
 							e.printStackTrace();
@@ -193,14 +191,12 @@ public class Player extends JFrame {
 						return null;
 					}
 
-
+					//after speech is done, enable listen button
 					@Override
 					protected void done(){
 						btnListen.setEnabled(true);
 					}
 				};
-
-				
 
 				worker.execute();
 			}
