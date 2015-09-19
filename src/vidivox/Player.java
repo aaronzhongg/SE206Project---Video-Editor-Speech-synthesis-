@@ -1,7 +1,5 @@
 package vidivox;
 
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.awt.BorderLayout;
 import java.awt.EventQueue;
 
@@ -10,6 +8,7 @@ import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.swing.text.DefaultStyledDocument;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JTextField;
@@ -17,7 +16,10 @@ import javax.swing.SwingConstants;
 import javax.swing.JTextPane;
 import javax.swing.JLabel;
 import javax.swing.SwingWorker;
+import javax.swing.text.*;
+import javax.swing.event.*;
 import javax.swing.Timer;
+
 
 import java.awt.Font;
 
@@ -44,6 +46,8 @@ import java.util.Scanner;
 import javax.swing.JTextArea;
 import javax.swing.DropMode;
 
+import components.DocumentSizeFilter;
+
 /*
  * Main menu frame, contains most of the GUI and the media player
  */
@@ -55,6 +59,8 @@ public class Player extends JFrame {
 	private JPanel contentPane;
 	private File videoFile;
 	private File mp3File;
+	private DefaultStyledDocument docfilt = new DefaultStyledDocument();
+	private JLabel lblChars;
 
 	/**
 	 * Launch the application.
@@ -153,6 +159,31 @@ public class Player extends JFrame {
 		btnFastForward.setBounds(228, 451, 70, 25);
 		contentPane.add(btnFastForward);
 
+		//set the maximum character to 125 so the festival voice doesn't die
+		docfilt.setDocumentFilter(new DocumentSizeFilter(125));
+		//add a listener to show user how many characters remaining
+		docfilt.addDocumentListener(new DocumentListener(){
+
+			@Override
+			public void changedUpdate(DocumentEvent e) {
+				charCount();
+				
+			}
+
+			@Override
+			public void insertUpdate(DocumentEvent e) {
+				charCount();
+				
+			}
+
+			@Override
+			public void removeUpdate(DocumentEvent e) {
+				charCount();
+				
+			}
+			
+		});
+		//simple text area for the user to enter text
 		final JTextArea txtArea = new JTextArea();
 		txtArea.setWrapStyleWord(true);
 		txtArea.setRows(5);
@@ -160,6 +191,7 @@ public class Player extends JFrame {
 		txtArea.setFont(new Font("Dialog", Font.PLAIN, 15));
 		txtArea.setLineWrap(true);
 		txtArea.setBounds(551, 12, 302, 151);
+		txtArea.setDocument(docfilt);
 		contentPane.add(txtArea);
 
 		//Simple mute button
@@ -177,16 +209,19 @@ public class Player extends JFrame {
 		btnListen.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				
-				//disable listen button so speak one thing at a time
+				//disable listen button so speak only one thing at a time
 				btnListen.setEnabled(false);
 
+			
 				SwingWorker worker = new SwingWorker<Void, Integer>() {
 
 					@Override
 					protected Void doInBackground() throws Exception {
+						//run festival in bash from the entered text
 						ProcessBuilder builder = new ProcessBuilder("/bin/bash", "-c", "echo " + txtArea.getText() + " | festival --tts");
 						
 						try {
+							//begin process and wait for process to complete
 							Process process = builder.start();
 							process.waitFor();
 
@@ -196,13 +231,14 @@ public class Player extends JFrame {
 						return null;
 					}
 
-					//after speech is done, enable listen button
+					//after speech is done, re enable listen button
 					@Override
 					protected void done(){
 						btnListen.setEnabled(true);
 					}
 				};
-
+				
+				//execute SwingWorker
 				worker.execute();
 			}
 		});
@@ -212,6 +248,11 @@ public class Player extends JFrame {
 		JButton btnCreateMp = new JButton("Create mp3");
 		btnCreateMp.setBounds(698, 192, 155, 40);
 		contentPane.add(btnCreateMp);
+		
+		//label for mp3 file
+		JLabel mp3Label = new JLabel("No mp3 file chosen");
+		mp3Label.setBounds(556, 313, 297, 15);
+		contentPane.add(mp3Label);
 		
 		//Browser for mp3 files
 		JButton btnBrowseMp = new JButton("Browse mp3...");
@@ -225,18 +266,12 @@ public class Player extends JFrame {
 				
 				if(returnVal == JFileChooser.APPROVE_OPTION){
 					mp3File = fileChooser.getSelectedFile();
+					mp3Label.setText(mp3File.getName());
 				}
 			}
 		});
 		btnBrowseMp.setBounds(551, 267, 155, 40);
 		contentPane.add(btnBrowseMp);
-
-		JLabel mp3Label = new JLabel("No mp3 file chosen");
-		mp3Label.setBounds(556, 313, 297, 15);
-		if(mp3File != null){
-			mp3Label.setText(mp3File.getAbsolutePath());
-		}
-		contentPane.add(mp3Label);
 
 		JButton btnNewButton_3 = new JButton("Add Commentary\n");
 		btnNewButton_3.setFont(new Font("Dialog", Font.BOLD, 22));
@@ -248,8 +283,13 @@ public class Player extends JFrame {
 		playerPanel.setBounds(33, 80, 506, 360);
 		mediaPlayerComponent = new EmbeddedMediaPlayerComponent();
 		video = mediaPlayerComponent.getMediaPlayer();
+		
+		lblChars = new JLabel("125/125");
+		lblChars.setBounds(795, 170, 70, 15);
+		contentPane.add(lblChars);
+		
 
-
+		
 		playerPanel.add(mediaPlayerComponent, BorderLayout.CENTER);
 		contentPane.add(playerPanel);
 		
@@ -280,8 +320,9 @@ public class Player extends JFrame {
 		contentPane.add(btnBrowseVideo);
 		
 		//label for timer
-		JLabel timerLabel = new JLabel("0 sec");
-		timerLabel.setBounds(404, 456, 129, 15);
+
+		final JLabel timerLabel = new JLabel("0 sec");
+		timerLabel.setBounds(404, 456, 70, 15);
 		contentPane.add(timerLabel);
 		
 		
@@ -296,6 +337,13 @@ public class Player extends JFrame {
         t.start();
         
 	}
+	
+	private void charCount() {
+		lblChars.setText((125 - docfilt.getLength())+"/125");
+		
+	}
+
+	
 
 	/*
 	 * check method to ensure concurrency when multiple events are fired
