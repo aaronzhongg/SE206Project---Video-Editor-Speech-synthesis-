@@ -212,7 +212,7 @@ public class Player extends JFrame {
 				btnListen.setEnabled(false);
 
 
-				SwingWorker worker = new SwingWorker<Void, Integer>() {
+				SwingWorker worker = new SwingWorker<Void, Void>() {
 
 					@Override
 					protected Void doInBackground() throws Exception {
@@ -250,35 +250,48 @@ public class Player extends JFrame {
 		btnCreateMp.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				//ask user to enter desired output name
-				String output = JOptionPane.showInputDialog("Enter output name: ");
-				if (output != null){
-					//create mp3 file
-					ProcessBuilder makeWav = new ProcessBuilder("/bin/bash", "-c", "echo " + txtArea.getText() + " | text2wave -o " + output +".wav");
-					ProcessBuilder convert = new ProcessBuilder("/bin/bash", "-c", "ffmpeg -i " + output + ".wav -f mp3 "+ output+".mp3");
-					try {
-						Process process = makeWav.start();
-						process.waitFor();
-						Process converse = convert.start();
-						converse.waitFor();
+				final String output = JOptionPane.showInputDialog("Enter output name: ");
 
-					} catch (IOException e) {
-						e.printStackTrace();
-					} catch (InterruptedException e) {
-						e.printStackTrace();
+				SwingWorker maker = new SwingWorker<Void,Void>() {
+
+					@Override
+					protected Void doInBackground() throws Exception {
+						if (output != null){
+							//create mp3 file
+							ProcessBuilder makeWav = new ProcessBuilder("/bin/bash", "-c", "echo " + txtArea.getText() + " | text2wave -o " + output +".wav");
+							ProcessBuilder convert = new ProcessBuilder("/bin/bash", "-c", "ffmpeg -i " + output + ".wav -f mp3 "+ output+".mp3");
+							try {
+								Process process = makeWav.start();
+								process.waitFor();
+								Process converse = convert.start();
+								converse.waitFor();
+
+							} catch (IOException e) {
+								e.printStackTrace();
+							} catch (InterruptedException e) {
+								e.printStackTrace();
+							}
+						}
+						return null;
 					}
 
-					//set the newly create file as the selected mp3 file
-					mp3File = new File(output+".mp3");
-					mp3Label.setText(mp3File.getName());
+					@Override
+					protected void done(){
+						//set the newly create file as the selected mp3 file
+						mp3File = new File(output+".mp3");
+						mp3Label.setText(mp3File.getName());
 
-					//remove the wav file that was created
-					try {
-						File del = new File(output+".wav");
-						del.delete();
-					} catch (Exception e) {
-						e.printStackTrace();
+						//remove the wav file that was created
+						try {
+							File del = new File(output+".wav");
+							del.delete();
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
 					}
-				}
+				};
+				
+				maker.execute();
 			}
 		});
 
@@ -322,7 +335,7 @@ public class Player extends JFrame {
 		mediaPlayerComponent = new EmbeddedMediaPlayerComponent();
 		video = mediaPlayerComponent.getMediaPlayer();
 
-		lblChars = new JLabel("125/125");
+		lblChars = new JLabel("200/200");
 		lblChars.setBounds(795, 170, 70, 15);
 		contentPane.add(lblChars);
 
@@ -376,7 +389,7 @@ public class Player extends JFrame {
 	}
 
 	private void charCount() {
-		lblChars.setText((125 - docfilt.getLength())+"/200");
+		lblChars.setText((200 - docfilt.getLength())+"/200");
 
 	}
 
