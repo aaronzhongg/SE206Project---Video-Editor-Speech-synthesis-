@@ -41,6 +41,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Scanner;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
@@ -279,8 +281,15 @@ public class Player extends JFrame {
 					@Override
 					protected void done(){
 						//set the newly create file as the selected mp3 file
-						mp3File = new File(output+".mp3");
-						mp3Label.setText(mp3File.getName());
+						URI mp3url;
+						try { 
+							//create URI from the path of the mp3 created (in the current directory)
+							mp3url = new URI("file:///"+System.getProperty("user.dir")+"/"+output+".mp3");
+							mp3File = new File(mp3url);
+							mp3Label.setText(mp3File.getName());
+						} catch (URISyntaxException e1) {
+							e1.printStackTrace();
+						}
 
 						//remove the wav file that was created
 						try {
