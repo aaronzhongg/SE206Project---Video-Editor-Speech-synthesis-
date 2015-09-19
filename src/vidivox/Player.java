@@ -8,6 +8,7 @@ import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.text.DefaultStyledDocument;
 import javax.swing.JButton;
+import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.JTextPane;
@@ -16,7 +17,6 @@ import javax.swing.SwingWorker;
 import javax.swing.text.*;
 import javax.swing.event.*;
 import javax.swing.Timer;
-
 
 import java.awt.Font;
 
@@ -241,6 +241,17 @@ public class Player extends JFrame {
 		contentPane.add(btnListen);
 
 		JButton btnCreateMp = new JButton("Create mp3");
+		btnCreateMp.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				String output = JOptionPane.showInputDialog("Enter output name: ");
+				ProcessBuilder makeWav = new ProcessBuilder("/bin/bash", "-c", "echo " + txtArea.getText() + " | text2wave | lame - "+output+".mp3");
+				try {
+					Process process = makeWav.start();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		});
 		btnCreateMp.setBounds(698, 192, 155, 40);
 		contentPane.add(btnCreateMp);
 
