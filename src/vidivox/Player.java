@@ -8,7 +8,10 @@ import java.awt.EventQueue;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
+import javax.swing.filechooser.FileFilter;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.JButton;
+import javax.swing.JFileChooser;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.JTextPane;
@@ -32,6 +35,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -49,6 +53,8 @@ public class Player extends JFrame {
 	private final EmbeddedMediaPlayer video ;
 	volatile private boolean mouseDown = false;
 	private JPanel contentPane;
+	private File videoFile;
+	private File mp3File;
 
 	/**
 	 * Launch the application.
@@ -66,8 +72,7 @@ public class Player extends JFrame {
 				try {
 					Player frame = new Player();
 					frame.setVisible(true);
-					//play big buck bunny, will change later
-					frame.mediaPlayerComponent.getMediaPlayer().playMedia("sample_video_big_buck_bunny_1_minute.avi");
+					
 					
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -207,14 +212,31 @@ public class Player extends JFrame {
 		JButton btnCreateMp = new JButton("Create mp3");
 		btnCreateMp.setBounds(698, 192, 155, 40);
 		contentPane.add(btnCreateMp);
-
+		
+		//Browser for mp3 files
 		JButton btnBrowseMp = new JButton("Browse mp3...");
+		btnBrowseMp.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				//create file chooser and filter (mp3)
+				final JFileChooser fileChooser = new JFileChooser();
+				FileFilter filter = new FileNameExtensionFilter("mp3 files", new String[] {"mp3","MP3"});
+				fileChooser.setFileFilter(filter);
+				int returnVal = fileChooser.showOpenDialog(new JFrame());
+				
+				if(returnVal == JFileChooser.APPROVE_OPTION){
+					mp3File = fileChooser.getSelectedFile();
+				}
+			}
+		});
 		btnBrowseMp.setBounds(551, 267, 155, 40);
 		contentPane.add(btnBrowseMp);
 
-		JLabel lblNewLabel = new JLabel("Insert mp3 path");
-		lblNewLabel.setBounds(556, 313, 297, 15);
-		contentPane.add(lblNewLabel);
+		JLabel mp3Label = new JLabel("No mp3 file chosen");
+		mp3Label.setBounds(556, 313, 297, 15);
+		if(mp3File != null){
+			mp3Label.setText(mp3File.getAbsolutePath());
+		}
+		contentPane.add(mp3Label);
 
 		JButton btnNewButton_3 = new JButton("Add Commentary\n");
 		btnNewButton_3.setFont(new Font("Dialog", Font.BOLD, 22));
@@ -230,16 +252,39 @@ public class Player extends JFrame {
 
 		playerPanel.add(mediaPlayerComponent, BorderLayout.CENTER);
 		contentPane.add(playerPanel);
-
+		
+		//video label, changes with user selection
+		JLabel videoLabel = new JLabel("No video chosen");
+		videoLabel.setBounds(33, 46, 506, 15);
+		contentPane.add(videoLabel);
+		
 		//button for choosing a video to play
 		JButton btnBrowseVideo = new JButton("Browse Video");
-		btnBrowseVideo.setBounds(33, 43, 168, 25);
+		btnBrowseVideo.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				//Add file chooser as well as set a filter so that user only picks avi or mp4 files
+				final JFileChooser fileChooser = new JFileChooser();
+				FileFilter filter = new FileNameExtensionFilter("Video files (avi and mp4)", new String[] {"avi", "mp4","AVI","MP4"});
+				fileChooser.setFileFilter(filter);
+				int returnVal = fileChooser.showOpenDialog(new JFrame());
+				
+				if(returnVal == JFileChooser.APPROVE_OPTION){
+					//play the file chosen
+					videoFile = fileChooser.getSelectedFile();
+					video.playMedia(videoFile.getAbsolutePath());
+					videoLabel.setText(videoFile.getName());
+				}
+			}
+		});
+		btnBrowseVideo.setBounds(33, 9, 168, 25);
 		contentPane.add(btnBrowseVideo);
 		
 		//label for timer
 		JLabel timerLabel = new JLabel("0 sec");
-		timerLabel.setBounds(404, 456, 70, 15);
+		timerLabel.setBounds(404, 456, 129, 15);
 		contentPane.add(timerLabel);
+		
+		
 		
 		//Timer used to check video time
 		Timer t = new Timer(200, new ActionListener() {
