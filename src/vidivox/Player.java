@@ -1,19 +1,20 @@
 package vidivox;
 
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.awt.BorderLayout;
 import java.awt.EventQueue;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
+import javax.swing.text.DefaultStyledDocument;
 import javax.swing.JButton;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.JTextPane;
 import javax.swing.JLabel;
 import javax.swing.SwingWorker;
+import javax.swing.text.*;
+import javax.swing.event.*;
 
 import java.awt.Font;
 
@@ -37,6 +38,8 @@ import java.util.Scanner;
 import javax.swing.JTextArea;
 import javax.swing.DropMode;
 
+import components.DocumentSizeFilter;
+
 /*
  * Main menu frame, contains most of the GUI and the media player
  */
@@ -46,6 +49,8 @@ public class Player extends JFrame {
 	private final EmbeddedMediaPlayer video ;
 	volatile private boolean mouseDown = false;
 	private JPanel contentPane;
+	private DefaultStyledDocument docfilt = new DefaultStyledDocument();
+	
 
 	/**
 	 * Launch the application.
@@ -144,6 +149,31 @@ public class Player extends JFrame {
 		btnFastForward.setBounds(228, 451, 70, 25);
 		contentPane.add(btnFastForward);
 
+		//set the maximum character to 125 so the festival voice doesn't die
+		docfilt.setDocumentFilter(new DocumentSizeFilter(125));
+		//add a listener to show user how many characters remaining
+		docfilt.addDocumentListener(new DocumentListener(){
+
+			@Override
+			public void changedUpdate(DocumentEvent e) {
+				
+				
+			}
+
+			@Override
+			public void insertUpdate(DocumentEvent e) {
+				
+				
+			}
+
+			@Override
+			public void removeUpdate(DocumentEvent e) {
+				
+				
+			}
+			
+		});
+		//simple text area for the user to enter text
 		final JTextArea txtArea = new JTextArea();
 		txtArea.setWrapStyleWord(true);
 		txtArea.setRows(5);
@@ -151,6 +181,7 @@ public class Player extends JFrame {
 		txtArea.setFont(new Font("Dialog", Font.PLAIN, 15));
 		txtArea.setLineWrap(true);
 		txtArea.setBounds(551, 12, 302, 151);
+		txtArea.setDocument(docfilt);
 		contentPane.add(txtArea);
 
 		//Simple mute button
@@ -168,16 +199,19 @@ public class Player extends JFrame {
 		btnListen.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				
-				//disable listen button so speak one thing at a time
+				//disable listen button so speak only one thing at a time
 				btnListen.setEnabled(false);
 
+			
 				SwingWorker worker = new SwingWorker<Void, Integer>() {
 
 					@Override
 					protected Void doInBackground() throws Exception {
+						//run festival in bash from the entered text
 						ProcessBuilder builder = new ProcessBuilder("/bin/bash", "-c", "echo " + txtArea.getText() + " | festival --tts");
 						
 						try {
+							//begin process and wait for process to complete
 							Process process = builder.start();
 							process.waitFor();
 
@@ -187,13 +221,14 @@ public class Player extends JFrame {
 						return null;
 					}
 
-					//after speech is done, enable listen button
+					//after speech is done, re enable listen button
 					@Override
 					protected void done(){
 						btnListen.setEnabled(true);
 					}
 				};
-
+				
+				//execute SwingWorker
 				worker.execute();
 			}
 		});
