@@ -259,7 +259,7 @@ public class Player extends JFrame {
 		btnCreateMp.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				//ask user to enter desired output name
-				final String output = JOptionPane.showInputDialog("Enter output name: ");
+				final String output = JOptionPane.showInputDialog("Enter Mp3 Name: ");
 
 				SwingWorker maker = new SwingWorker<Void,Void>() {
 
@@ -306,7 +306,7 @@ public class Player extends JFrame {
 						}
 					}
 				};
-				
+
 				maker.execute();
 			}
 		});
@@ -337,8 +337,9 @@ public class Player extends JFrame {
 				if(returnVal == JFileChooser.APPROVE_OPTION){
 					mp3File = fileChooser.getSelectedFile();
 					mp3Label.setText(mp3File.getName());
-					btnAddCom.setEnabled(true);
-					
+					if (videoFile.length() != 0) {
+						btnAddCom.setEnabled(true);
+					}
 				}
 			}
 		});
@@ -346,26 +347,26 @@ public class Player extends JFrame {
 		contentPane.add(btnBrowseMp);
 
 		btnAddCom = new JButton("Add Commentary\n");
-		
+
 		btnAddCom.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				
-				final String comOutName = JOptionPane.showInputDialog("Enter output name: ");
-				
+
+				final String comOutName = JOptionPane.showInputDialog("Enter New Video Name: ");
+
 				SwingWorker adder = new SwingWorker<Void,Void>() {
 
 					@Override
 					protected Void doInBackground() throws Exception {
 						ProcessBuilder splitter = new ProcessBuilder("/bin/bash", "-c", "ffmpeg -i " + videoFile.getName() + " -i " + mp3File.getName() + " -filter_complex amix=inputs=2:duration=first temp.mp3");
 						ProcessBuilder combiner = new ProcessBuilder("/bin/bash", "-c", "ffmpeg -i temp.mp3 -i " + videoFile.getName() + " -map 0:a -map 1:v " + comOutName + ".avi");
-						
+
 						Process split = splitter.start();
 						split.waitFor();
 						Process combine = combiner.start();
 						combine.waitFor();
 						return null;
 					}
-					
+
 					@Override
 					protected void done(){
 						//remove the mp3 file that was created
@@ -376,20 +377,20 @@ public class Player extends JFrame {
 							e.printStackTrace();
 						}
 					}
-					
+
 				};
-				
+
 				adder.execute();
-				
+
 			}
-			
+
 		});
 
 		btnAddCom.setBackground(Color.GRAY);
 		btnAddCom.setForeground(Color.WHITE);
 		btnAddCom.setFont(new Font("Dialog", Font.BOLD, 22));
 		btnAddCom.setBounds(551, 365, 302, 111);
-		
+
 		btnAddCom.setEnabled(false);
 		contentPane.add(btnAddCom);
 
@@ -431,7 +432,9 @@ public class Player extends JFrame {
 					videoFile = fileChooser.getSelectedFile();
 					video.playMedia(videoFile.getAbsolutePath());
 					videoLabel.setText(videoFile.getName());
-					btnAddCom.setEnabled(true);
+					if (mp3File.length() != 0){
+						btnAddCom.setEnabled(true);
+					}
 				}
 			}
 		});
@@ -492,7 +495,7 @@ public class Player extends JFrame {
 						} catch (InterruptedException e) {
 							e.printStackTrace();
 						}
-						
+
 					} while (mouseDown); //do until released
 					isRunning = false;	//no longer running
 				}
