@@ -15,11 +15,15 @@ import javax.swing.JLabel;
 import javax.swing.SwingWorker;
 import javax.swing.text.*;
 import javax.swing.event.*;
+import javax.swing.Timer;
+
 
 import java.awt.Font;
 
 import uk.co.caprica.vlcj.binding.LibVlc;
 import uk.co.caprica.vlcj.component.EmbeddedMediaPlayerComponent;
+import uk.co.caprica.vlcj.player.MediaPlayer;
+import uk.co.caprica.vlcj.player.MediaPlayerEventAdapter;
 import uk.co.caprica.vlcj.player.embedded.EmbeddedMediaPlayer;
 import uk.co.caprica.vlcj.runtime.RuntimeUtil;
 
@@ -70,6 +74,7 @@ public class Player extends JFrame {
 					frame.setVisible(true);
 					//play big buck bunny, will change later
 					frame.mediaPlayerComponent.getMediaPlayer().playMedia("sample_video_big_buck_bunny_1_minute.avi");
+					
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -266,6 +271,21 @@ public class Player extends JFrame {
 		JButton btnBrowseVideo = new JButton("Browse Video");
 		btnBrowseVideo.setBounds(33, 43, 168, 25);
 		contentPane.add(btnBrowseVideo);
+		
+		//label for timer
+		final JLabel timerLabel = new JLabel("0 sec");
+		timerLabel.setBounds(404, 456, 70, 15);
+		contentPane.add(timerLabel);
+		
+		//Timer used to check video time
+		Timer t = new Timer(200, new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				timerLabel.setText((video.getTime()/1000)+ " sec");	//get video time
+			}
+		}); 
+        t.start();
+        
 	}
 
 	/*
@@ -296,6 +316,4 @@ public class Player extends JFrame {
 			}.start();	
 		}
 	}
-
-
 }
