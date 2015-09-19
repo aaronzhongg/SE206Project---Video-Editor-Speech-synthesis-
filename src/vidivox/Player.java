@@ -337,6 +337,43 @@ public class Player extends JFrame {
 		contentPane.add(btnBrowseMp);
 
 		btnAddCom = new JButton("Add Commentary\n");
+		btnAddCom.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				
+				final String comOutName = JOptionPane.showInputDialog("Enter output name: ");
+				
+				SwingWorker adder = new SwingWorker<Void,Void>() {
+
+					@Override
+					protected Void doInBackground() throws Exception {
+						ProcessBuilder splitter = new ProcessBuilder("/bin/bash", "-c", "ffmpeg -i " + videoFile.getName() + " -i " + mp3File.getName() + " -filter_complex amix=inputs=2:duration=first temp.mp3");
+						ProcessBuilder combiner = new ProcessBuilder("/bin/bash", "-c", "ffmpeg -i temp.mp3 -i " + videoFile.getName() + " -map 0:a -map 1:v " + comOutName + ".avi");
+						
+						Process split = splitter.start();
+						split.waitFor();
+						Process combine = combiner.start();
+						combine.waitFor();
+						return null;
+					}
+					
+					@Override
+					protected void done(){
+						//remove the mp3 file that was created
+						try {
+							File del = new File("temp.mp3");
+							del.delete();
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+					}
+					
+				};
+				
+				adder.execute();
+				
+			}
+			
+		});
 		btnAddCom.setFont(new Font("Dialog", Font.BOLD, 22));
 		btnAddCom.setBounds(551, 365, 302, 111);
 		btnAddCom.setEnabled(false);
