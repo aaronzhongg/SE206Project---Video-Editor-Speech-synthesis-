@@ -81,9 +81,7 @@ public class Player extends JFrame {
 			public void run() {
 				try {
 					Player frame = new Player();
-					frame.setVisible(true);
-					
-					
+					frame.setVisible(true);					
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -91,9 +89,9 @@ public class Player extends JFrame {
 		});
 	}
 
-	/**
-	 * Create the frame.
-	 */
+	
+	//Create the frame.
+	 
 	public Player() {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 865, 511);
@@ -194,7 +192,7 @@ public class Player extends JFrame {
 		txtArea.setToolTipText("Enter text for text to speech. ");
 		txtArea.setFont(new Font("Dialog", Font.PLAIN, 15));
 		txtArea.setLineWrap(true);
-		txtArea.setBounds(551, 12, 302, 151);
+		txtArea.setBounds(551, 41, 302, 122);
 		txtArea.setDocument(docfilt);
 		contentPane.add(txtArea);
 
@@ -295,6 +293,7 @@ public class Player extends JFrame {
 			public void actionPerformed(ActionEvent arg0) {
 				//create file chooser and filter (mp3)
 				final JFileChooser fileChooser = new JFileChooser();
+				fileChooser.setAcceptAllFileFilterUsed(false);
 				FileFilter filter = new FileNameExtensionFilter("mp3 files", new String[] {"mp3","MP3"});
 				fileChooser.setFileFilter(filter);
 				int returnVal = fileChooser.showOpenDialog(new JFrame());
@@ -315,7 +314,7 @@ public class Player extends JFrame {
 
 		//panel for video player
 		JPanel playerPanel = new JPanel(new BorderLayout());
-		playerPanel.setBounds(33, 80, 506, 360);
+		playerPanel.setBounds(33, 41, 506, 399);
 		mediaPlayerComponent = new EmbeddedMediaPlayerComponent();
 		video = mediaPlayerComponent.getMediaPlayer();
 		
@@ -323,14 +322,12 @@ public class Player extends JFrame {
 		lblChars.setBounds(795, 170, 70, 15);
 		contentPane.add(lblChars);
 		
-
-		
 		playerPanel.add(mediaPlayerComponent, BorderLayout.CENTER);
 		contentPane.add(playerPanel);
 		
 		//video label, changes with user selection
 		final JLabel videoLabel = new JLabel("No video chosen");
-		videoLabel.setBounds(33, 46, 506, 15);
+		videoLabel.setBounds(228, 14, 506, 15);
 		contentPane.add(videoLabel);
 		
 		//button for choosing a video to play
@@ -339,8 +336,9 @@ public class Player extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				//Add file chooser as well as set a filter so that user only picks avi or mp4 files
 				final JFileChooser fileChooser = new JFileChooser();
+				fileChooser.setAcceptAllFileFilterUsed(false);
 				FileFilter filter = new FileNameExtensionFilter("Video files (avi and mp4)", new String[] {"avi", "mp4","AVI","MP4"});
-				fileChooser.setFileFilter(filter);
+				fileChooser.setFileFilter(filter); 
 				int returnVal = fileChooser.showOpenDialog(new JFrame());
 				
 				if(returnVal == JFileChooser.APPROVE_OPTION){
