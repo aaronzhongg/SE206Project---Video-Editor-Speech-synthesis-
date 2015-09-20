@@ -65,6 +65,7 @@ public class Player extends JFrame {
 	protected JButton btnAddCom;
 	protected JButton btnListen;
 	protected final JTextArea txtArea;
+	protected JButton btnCreateMp;
 	protected static Player frame;
 	/**
 	 * Launch the application.
@@ -93,6 +94,7 @@ public class Player extends JFrame {
 	//Main menu frame, contains most of the GUI and the media player
 
 	public Player() {
+		setResizable(false);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 865, 511);
 		contentPane = new JPanel();
@@ -221,9 +223,9 @@ public class Player extends JFrame {
 
 				//disable listen button so speak only one thing at a time
 				btnListen.setEnabled(false);
-				
+
 				ListenDoInBackground ListenWorker = new ListenDoInBackground(frame);
-				
+
 				//execute SwingWorker
 				ListenWorker.execute();
 			}
@@ -233,7 +235,8 @@ public class Player extends JFrame {
 		btnListen.setBounds(551, 192, 135, 40);
 		contentPane.add(btnListen);
 
-		JButton btnCreateMp = new JButton("Create mp3");
+		btnCreateMp = new JButton("Create mp3");
+		btnCreateMp.setEnabled(false);
 		btnCreateMp.setBackground(Color.GRAY);
 		btnCreateMp.setForeground(Color.WHITE);
 		btnCreateMp.addActionListener(new ActionListener() {
@@ -242,18 +245,19 @@ public class Player extends JFrame {
 				final String output = JOptionPane.showInputDialog("Enter Mp3 Name: ");
 				File f = new File(output+".mp3");
 				if (output != null && output.length() > 0){
-				if(f.exists() && !f.isDirectory()) { 
-					int reply = JOptionPane.showConfirmDialog(null, "File already exists, overwrite?", "Overwrite?", JOptionPane.YES_NO_OPTION);
-					if (reply == JOptionPane.YES_OPTION){
+					if(f.exists() && !f.isDirectory()) { 
+						//ask if user would want to overwrite existing file
+						int reply = JOptionPane.showConfirmDialog(null, "File already exists, overwrite?", "Overwrite?", JOptionPane.YES_NO_OPTION);
+						if (reply == JOptionPane.YES_OPTION){
+							CreateMp3DoInBackground maker = new CreateMp3DoInBackground(frame, output);
+
+							maker.execute();
+						}
+					} else {
 						CreateMp3DoInBackground maker = new CreateMp3DoInBackground(frame, output);
 
 						maker.execute();
 					}
-				} else {
-					CreateMp3DoInBackground maker = new CreateMp3DoInBackground(frame, output);
-
-					maker.execute();
-				}
 				}
 			}
 		});
@@ -292,7 +296,7 @@ public class Player extends JFrame {
 		});
 		btnBrowseMp.setBounds(551, 267, 155, 40);
 		contentPane.add(btnBrowseMp);
-		
+
 		//Button to combined selected audio and video files
 		btnAddCom = new JButton("Add Commentary\n");
 
@@ -302,7 +306,7 @@ public class Player extends JFrame {
 				final String comOutName = JOptionPane.showInputDialog("Enter New Video Name: ");
 				//generate swingworker instance
 				AddComDoInBackground adder = new AddComDoInBackground(frame, comOutName);
-				
+
 				adder.execute();
 
 			}
@@ -384,7 +388,14 @@ public class Player extends JFrame {
 	}
 
 	private void charCount() {
+		//Set a label to indicate how many characters remaining
 		lblChars.setText((200 - docfilt.getLength())+"/200");
+		//disable/reenable create mp3 button when text area is empty/non-empty
+		if (docfilt.getLength() == 0){
+			btnCreateMp.setEnabled(false);
+		} else {
+			btnCreateMp.setEnabled(true);
+		}
 
 	}
 
