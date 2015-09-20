@@ -15,8 +15,8 @@ public class AddComDoInBackground extends SwingWorker<Void, Void>{
 	@Override
 	protected Void doInBackground() throws Exception {
 		//FFMPEG commands to split audio from video, combine the two audios and re attache the audio and video  
-		ProcessBuilder splitter = new ProcessBuilder("/bin/bash", "-c", "ffmpeg -i " + player.videoFile.getName() + " -i " + player.mp3File.getName() + " -filter_complex amix=inputs=2:duration=first temp.mp3");
-		ProcessBuilder combiner = new ProcessBuilder("/bin/bash", "-c", "ffmpeg -i temp.mp3 -i " + player.videoFile.getName() + " -map 0:a -map 1:v " + comOutName + ".avi");
+		ProcessBuilder splitter = new ProcessBuilder("/bin/bash", "-c", "ffmpeg -i " + player.videoFile.getAbsolutePath() + " -i " + player.mp3File.getAbsolutePath() + " -filter_complex amix=inputs=2:duration=first temp.mp3");
+		ProcessBuilder combiner = new ProcessBuilder("/bin/bash", "-c", "ffmpeg -i temp.mp3 -i " + player.videoFile.getAbsolutePath() + " -map 0:a -map 1:v " + comOutName + ".avi");
 
 		Process split = splitter.start();
 		split.waitFor();
