@@ -56,6 +56,7 @@ public class Player extends JFrame {
 	private final EmbeddedMediaPlayer video ;
 	volatile private boolean mouseDown = false;
 	private JPanel contentPane;
+
 	protected File videoFile;
 	protected File mp3File;
 	private DefaultStyledDocument docfilt = new DefaultStyledDocument();
@@ -239,54 +240,21 @@ public class Player extends JFrame {
 			public void actionPerformed(ActionEvent arg0) {
 				//ask user to enter desired output name
 				final String output = JOptionPane.showInputDialog("Enter Mp3 Name: ");
+				File f = new File(output+".mp3");
+				if (output != null && output.length() > 0){
+				if(f.exists() && !f.isDirectory()) { 
+					int reply = JOptionPane.showConfirmDialog(null, "File already exists, overwrite?", "Overwrite?", JOptionPane.YES_NO_OPTION);
+					if (reply == JOptionPane.YES_OPTION){
+						CreateMp3DoInBackground maker = new CreateMp3DoInBackground(frame, output);
 
-				SwingWorker maker = new SwingWorker<Void,Void>() {
-
-					@Override
-					protected Void doInBackground() throws Exception {
-						if (output != null){
-							//create mp3 file
-							ProcessBuilder makeWav = new ProcessBuilder("/bin/bash", "-c", "echo " + txtArea.getText() + " | text2wave -o " + output +".wav");
-							ProcessBuilder convert = new ProcessBuilder("/bin/bash", "-c", "ffmpeg -i " + output + ".wav -f mp3 "+ output+".mp3");
-							try {
-								Process process = makeWav.start();
-								process.waitFor();
-								Process converse = convert.start();
-								converse.waitFor();
-
-							} catch (IOException e) {
-								e.printStackTrace();
-							} catch (InterruptedException e) {
-								e.printStackTrace();
-							}
-						}
-						return null;
+						maker.execute();
 					}
+				} else {
+					CreateMp3DoInBackground maker = new CreateMp3DoInBackground(frame, output);
 
-					@Override
-					protected void done(){
-						//set the newly create file as the selected mp3 file
-						URI mp3url;
-						try { 
-							//create URI from the path of the mp3 created (in the current directory)
-							mp3url = new URI("file:///"+System.getProperty("user.dir")+"/"+output+".mp3");
-							mp3File = new File(mp3url);
-							mp3Label.setText(mp3File.getName());
-						} catch (URISyntaxException e1) {
-							e1.printStackTrace();
-						}
-
-						//remove the wav file that was created
-						try {
-							File del = new File(output+".wav");
-							del.delete();
-						} catch (Exception e) {
-							e.printStackTrace();
-						}
-					}
-				};
-
-				maker.execute();
+					maker.execute();
+				}
+				}
 			}
 		});
 
