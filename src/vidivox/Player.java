@@ -373,6 +373,18 @@ public class Player extends JFrame {
 		timerLabel.setForeground(Color.WHITE);
 		timerLabel.setBounds(404, 456, 70, 15);
 		contentPane.add(timerLabel);
+		
+		JButton btnPlaymp3 = new JButton("Play Mp3");
+		btnPlaymp3.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				if(mp3File != null)
+					video.playMedia(mp3File.getAbsolutePath());
+			}
+		});
+		btnPlaymp3.setBackground(Color.GRAY);
+		btnPlaymp3.setForeground(Color.WHITE);
+		btnPlaymp3.setBounds(718, 267, 135, 40);
+		contentPane.add(btnPlaymp3);
 
 
 
