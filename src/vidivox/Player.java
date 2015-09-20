@@ -57,7 +57,7 @@ public class Player extends JFrame {
 	private final EmbeddedMediaPlayer video ;
 	volatile private boolean mouseDown = false;
 	private JPanel contentPane;
-
+	private boolean isMp3Playing = false;
 	protected File videoFile;
 	protected File mp3File;
 	private DefaultStyledDocument docfilt = new DefaultStyledDocument();
@@ -370,7 +370,7 @@ public class Player extends JFrame {
 				//Add file chooser as well as set a filter so that user only picks avi or mp4 files
 				final JFileChooser fileChooser = new JFileChooser();
 				fileChooser.setAcceptAllFileFilterUsed(false);
-				FileFilter filter = new FileNameExtensionFilter("Video files (avi and mp4)", new String[] {"avi", "mp4","AVI","MP4"});
+				FileFilter filter = new FileNameExtensionFilter("Video files (avi and mp4)", new String[] {"avi", "AVI"});
 				fileChooser.setFileFilter(filter); 
 				int returnVal = fileChooser.showOpenDialog(new JFrame());
 
@@ -395,11 +395,29 @@ public class Player extends JFrame {
 		timerLabel.setBounds(404, 456, 70, 15);
 		contentPane.add(timerLabel);
 
-		JButton btnPlaymp3 = new JButton("Play Mp3");
+		//Plays the selected mp3 file
+		final JButton btnPlaymp3 = new JButton("Play Mp3");
 		btnPlaymp3.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				if(mp3File != null)
-					video.playMedia(mp3File.getAbsolutePath());
+				//checks whether mp3 is playing or video is
+				if(isMp3Playing == false){
+					if(mp3File != null){
+						isMp3Playing = true;
+						btnPlaymp3.setText("Back to Video");	//change button name
+						video.playMedia(mp3File.getAbsolutePath());
+					}	
+				}else{
+					//click again to go back to video
+					if(videoFile != null){
+						isMp3Playing = false;
+						btnPlaymp3.setText("Play Mp3");
+						video.playMedia(videoFile.getAbsolutePath());
+					}else{
+						isMp3Playing = false;
+						btnPlaymp3.setText("Play Mp3");
+					}
+				}
+				
 			}
 		});
 		btnPlaymp3.setBackground(Color.GRAY);
