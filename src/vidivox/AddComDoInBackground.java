@@ -34,5 +34,9 @@ public class AddComDoInBackground extends SwingWorker<Void, Void>{
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		
+		if (player.videoFile != null) {
+			player.btnAddCom.setEnabled(true);
+		}
 	}
 }

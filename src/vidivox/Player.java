@@ -207,6 +207,7 @@ public class Player extends JFrame {
 
 		//Button for listening to text entered
 		btnListen = new JButton("Listen");
+		btnListen.setEnabled(false);
 		btnListen.setBackground(Color.GRAY);
 		btnListen.setForeground(Color.WHITE);
 		btnListen.addActionListener(new ActionListener() {
@@ -295,10 +296,24 @@ public class Player extends JFrame {
 			public void actionPerformed(ActionEvent arg0) {
 				//pick a name for the output file
 				final String comOutName = JOptionPane.showInputDialog("Enter New Video Name: ");
-				//generate swingworker instance
-				AddComDoInBackground adder = new AddComDoInBackground(frame, comOutName);
+				File f = new File(comOutName+".avi");
+				
+				if(f.exists() && !f.isDirectory()) { 
+					//ask if user would want to overwrite existing file
+					int reply = JOptionPane.showConfirmDialog(null, "File already exists, overwrite?", "Overwrite?", JOptionPane.YES_NO_OPTION);
+					if (reply == JOptionPane.YES_OPTION){
+						//generate swingworker instance
+						AddComDoInBackground adder = new AddComDoInBackground(frame, comOutName);
 
-				adder.execute();
+						adder.execute();
+					}
+				} else {
+					//generate swingworker instance
+					AddComDoInBackground adder = new AddComDoInBackground(frame, comOutName);
+
+					adder.execute();
+				}
+
 
 			}
 		});
@@ -331,7 +346,7 @@ public class Player extends JFrame {
 		txtArea.setBounds(551, 41, 302, 122);
 		txtArea.setDocument(docfilt);
 		contentPane.add(txtArea);
-		
+
 		//Allow text area to scroll
 		JScrollPane scrollPane = new JScrollPane(txtArea);
 		scrollPane.setBounds(551, 41, 302, 122);
@@ -379,7 +394,7 @@ public class Player extends JFrame {
 		timerLabel.setForeground(Color.WHITE);
 		timerLabel.setBounds(404, 456, 70, 15);
 		contentPane.add(timerLabel);
-		
+
 		JButton btnPlaymp3 = new JButton("Play Mp3");
 		btnPlaymp3.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
@@ -411,8 +426,10 @@ public class Player extends JFrame {
 		//disable/reenable create mp3 button when text area is empty/non-empty
 		if (docfilt.getLength() == 0){
 			btnCreateMp.setEnabled(false);
+			btnListen.setEnabled(false);
 		} else {
 			btnCreateMp.setEnabled(true);
+			btnListen.setEnabled(true);
 		}
 
 	}

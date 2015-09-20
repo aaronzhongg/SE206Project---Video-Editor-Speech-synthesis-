@@ -57,5 +57,9 @@ public class CreateMp3DoInBackground extends SwingWorker<Void,Void> {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		
+		if (player.videoFile != null) {
+			player.btnAddCom.setEnabled(true);
+		}
 	}
 }
