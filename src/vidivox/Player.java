@@ -41,6 +41,7 @@ import components.DocumentSizeFilter;
 import java.awt.Color;
 import java.awt.SystemColor;
 import javax.swing.UIManager;
+import javax.swing.JScrollPane;
 
 /*
  * This is the VIDIVOX prototype for SE206 assignment 3
@@ -191,16 +192,6 @@ public class Player extends JFrame {
 			}
 
 		});
-		//simple text area for the user to enter text
-		txtArea = new JTextArea();
-		txtArea.setWrapStyleWord(true);
-		txtArea.setRows(5);
-		txtArea.setToolTipText("Enter text for text to speech. ");
-		txtArea.setFont(new Font("Dialog", Font.PLAIN, 15));
-		txtArea.setLineWrap(true);
-		txtArea.setBounds(551, 41, 302, 122);
-		txtArea.setDocument(docfilt);
-		contentPane.add(txtArea);
 
 		//Simple mute button
 		JButton btnMute = new JButton("Mute");
@@ -330,6 +321,21 @@ public class Player extends JFrame {
 		lblChars.setForeground(Color.WHITE);
 		lblChars.setBounds(795, 170, 70, 15);
 		contentPane.add(lblChars);
+		//simple text area for the user to enter text
+		txtArea = new JTextArea();
+		txtArea.setWrapStyleWord(true);
+		txtArea.setRows(5);
+		txtArea.setToolTipText("Enter text for text to speech. ");
+		txtArea.setFont(new Font("Dialog", Font.PLAIN, 15));
+		txtArea.setLineWrap(true);
+		txtArea.setBounds(551, 41, 302, 122);
+		txtArea.setDocument(docfilt);
+		contentPane.add(txtArea);
+		
+		//Allow text area to scroll
+		JScrollPane scrollPane = new JScrollPane(txtArea);
+		scrollPane.setBounds(551, 41, 302, 122);
+		contentPane.add(scrollPane);
 
 		playerPanel.add(mediaPlayerComponent, BorderLayout.CENTER);
 		contentPane.add(playerPanel);
