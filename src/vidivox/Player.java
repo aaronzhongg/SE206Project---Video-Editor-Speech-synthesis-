@@ -56,12 +56,14 @@ public class Player extends JFrame {
 	private final EmbeddedMediaPlayer video ;
 	volatile private boolean mouseDown = false;
 	private JPanel contentPane;
-	private File videoFile;
-	protected static File mp3File;
+
+	protected File videoFile;
+	protected File mp3File;
 	private DefaultStyledDocument docfilt = new DefaultStyledDocument();
 	private JLabel lblChars;
-	protected static JLabel mp3Label;
-	private JButton btnAddCom;
+	protected final JLabel mp3Label;
+	protected JButton btnAddCom;
+	protected JButton btnListen;
 	protected final JTextArea txtArea;
 	protected static Player frame;
 	/**
@@ -211,7 +213,7 @@ public class Player extends JFrame {
 		contentPane.add(btnMute);
 
 		//Button for listening to text entered
-		final JButton btnListen = new JButton("Listen");
+		btnListen = new JButton("Listen");
 		btnListen.setBackground(Color.GRAY);
 		btnListen.setForeground(Color.WHITE);
 		btnListen.addActionListener(new ActionListener() {
@@ -219,35 +221,11 @@ public class Player extends JFrame {
 
 				//disable listen button so speak only one thing at a time
 				btnListen.setEnabled(false);
-
-
-				SwingWorker worker = new SwingWorker<Void, Void>() {
-
-					@Override
-					protected Void doInBackground() throws Exception {
-						//run festival in bash from the entered text
-						ProcessBuilder builder = new ProcessBuilder("/bin/bash", "-c", "echo " + txtArea.getText() + " | festival --tts");
-
-						try {
-							//begin process and wait for process to complete
-							Process process = builder.start();
-							process.waitFor();
-
-						} catch (IOException e) {
-							e.printStackTrace();
-						}
-						return null;
-					}
-
-					//after speech is done, re enable listen button
-					@Override
-					protected void done(){
-						btnListen.setEnabled(true);
-					}
-				};
-
+				
+				ListenDoInBackground ListenWorker = new ListenDoInBackground(frame);
+				
 				//execute SwingWorker
-				worker.execute();
+				ListenWorker.execute();
 			}
 		});
 
@@ -267,12 +245,12 @@ public class Player extends JFrame {
 				if(f.exists() && !f.isDirectory()) { 
 					int reply = JOptionPane.showConfirmDialog(null, "File already exists, overwrite?", "Overwrite?", JOptionPane.YES_NO_OPTION);
 					if (reply == JOptionPane.YES_OPTION){
-						CreateMp3DoInBackground maker = new CreateMp3DoInBackground(output);
+						CreateMp3DoInBackground maker = new CreateMp3DoInBackground(frame, output);
 
 						maker.execute();
 					}
 				} else {
-					CreateMp3DoInBackground maker = new CreateMp3DoInBackground(output);
+					CreateMp3DoInBackground maker = new CreateMp3DoInBackground(frame, output);
 
 					maker.execute();
 				}
@@ -306,7 +284,7 @@ public class Player extends JFrame {
 				if(returnVal == JFileChooser.APPROVE_OPTION){
 					mp3File = fileChooser.getSelectedFile();
 					mp3Label.setText(mp3File.getName());
-					if (videoFile.length() != 0) {
+					if (videoFile != null) {
 						btnAddCom.setEnabled(true);
 					}
 				}
@@ -314,45 +292,20 @@ public class Player extends JFrame {
 		});
 		btnBrowseMp.setBounds(551, 267, 155, 40);
 		contentPane.add(btnBrowseMp);
-
+		
+		//Button to combined selected audio and video files
 		btnAddCom = new JButton("Add Commentary\n");
 
 		btnAddCom.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-
+				//pick a name for the output file
 				final String comOutName = JOptionPane.showInputDialog("Enter New Video Name: ");
-
-				SwingWorker adder = new SwingWorker<Void,Void>() {
-
-					@Override
-					protected Void doInBackground() throws Exception {
-						ProcessBuilder splitter = new ProcessBuilder("/bin/bash", "-c", "ffmpeg -i " + videoFile.getName() + " -i " + mp3File.getName() + " -filter_complex amix=inputs=2:duration=first temp.mp3");
-						ProcessBuilder combiner = new ProcessBuilder("/bin/bash", "-c", "ffmpeg -i temp.mp3 -i " + videoFile.getName() + " -map 0:a -map 1:v " + comOutName + ".avi");
-
-						Process split = splitter.start();
-						split.waitFor();
-						Process combine = combiner.start();
-						combine.waitFor();
-						return null;
-					}
-
-					@Override
-					protected void done(){
-						//remove the mp3 file that was created
-						try {
-							File del = new File("temp.mp3");
-							del.delete();
-						} catch (Exception e) {
-							e.printStackTrace();
-						}
-					}
-
-				};
-
+				//generate swingworker instance
+				AddComDoInBackground adder = new AddComDoInBackground(frame, comOutName);
+				
 				adder.execute();
 
 			}
-
 		});
 
 		btnAddCom.setBackground(Color.GRAY);
@@ -401,7 +354,7 @@ public class Player extends JFrame {
 					videoFile = fileChooser.getSelectedFile();
 					video.playMedia(videoFile.getAbsolutePath());
 					videoLabel.setText(videoFile.getName());
-					if (mp3File.length() != 0){
+					if (mp3File != null){
 						btnAddCom.setEnabled(true);
 					}
 				}

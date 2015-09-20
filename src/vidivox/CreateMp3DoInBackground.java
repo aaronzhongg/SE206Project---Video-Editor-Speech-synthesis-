@@ -8,10 +8,12 @@ import java.net.URISyntaxException;
 import javax.swing.SwingWorker;
 import vidivox.Player;
 public class CreateMp3DoInBackground extends SwingWorker<Void,Void> {
-	String output;
+	private String output;
+	private Player player;
 	
-	public CreateMp3DoInBackground(String output){
+	public CreateMp3DoInBackground(Player p, String output){
 		this.output = output;
+		this.player = p;
 	}
 	
 	@Override
@@ -42,8 +44,8 @@ public class CreateMp3DoInBackground extends SwingWorker<Void,Void> {
 		try { 
 			//create URI from the path of the mp3 created (in the current directory)
 			mp3url = new URI("file:///"+System.getProperty("user.dir")+"/"+output+".mp3");
-			Player.mp3File = new File(mp3url);
-			Player.mp3Label.setText(Player.mp3File.getName());
+			player.mp3File = new File(mp3url);
+			player.mp3Label.setText(player.mp3File.getName());
 		} catch (URISyntaxException e1) {
 			e1.printStackTrace();
 		}
