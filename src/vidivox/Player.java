@@ -97,7 +97,7 @@ public class Player extends JFrame {
 	public Player() {
 		setResizable(false);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 865, 511);
+		setBounds(100, 100, 1079, 518);
 		contentPane = new JPanel();
 		contentPane.setBackground(Color.DARK_GRAY);
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -124,7 +124,7 @@ public class Player extends JFrame {
 				}
 			}
 		});
-		btnReverse.setBounds(33, 451, 70, 25);
+		btnReverse.setBounds(33, 450, 70, 25);
 		contentPane.add(btnReverse);
 
 		//Play and pause button
@@ -141,7 +141,7 @@ public class Player extends JFrame {
 				}
 			}
 		});
-		btnPlay.setBounds(112, 451, 117, 25);
+		btnPlay.setBounds(112, 450, 117, 25);
 		contentPane.add(btnPlay);
 
 		//fastforward button
@@ -168,7 +168,7 @@ public class Player extends JFrame {
 		});
 
 
-		btnFastForward.setBounds(241, 451, 70, 25);
+		btnFastForward.setBounds(241, 450, 70, 25);
 		contentPane.add(btnFastForward);
 
 		//set the maximum character to 200 so the festival voice doesn't die
@@ -202,7 +202,7 @@ public class Player extends JFrame {
 				video.mute();
 			}
 		});
-		btnMute.setBounds(323, 451, 70, 25);
+		btnMute.setBounds(323, 450, 70, 25);
 		contentPane.add(btnMute);
 
 		//Button for listening to text entered
@@ -224,7 +224,7 @@ public class Player extends JFrame {
 		});
 
 		//Button to allow user to create an mp3 file from the text entered
-		btnListen.setBounds(551, 192, 135, 40);
+		btnListen.setBounds(750, 192, 135, 40);
 		contentPane.add(btnListen);
 
 		btnCreateMp = new JButton("Create mp3");
@@ -255,13 +255,13 @@ public class Player extends JFrame {
 		});
 
 
-		btnCreateMp.setBounds(698, 192, 155, 40);
+		btnCreateMp.setBounds(905, 192, 142, 40);
 		contentPane.add(btnCreateMp);
 
 		//label for mp3 file
 		mp3Label = new JLabel("No mp3 file chosen");
 		mp3Label.setForeground(Color.WHITE);
-		mp3Label.setBounds(556, 313, 297, 15);
+		mp3Label.setBounds(750, 310, 297, 15);
 		contentPane.add(mp3Label);
 
 		//Browser for mp3 files
@@ -286,7 +286,7 @@ public class Player extends JFrame {
 				}
 			}
 		});
-		btnBrowseMp.setBounds(551, 267, 155, 40);
+		btnBrowseMp.setBounds(750, 260, 135, 40);
 		contentPane.add(btnBrowseMp);
 
 		//Button to combined selected audio and video files
@@ -321,20 +321,20 @@ public class Player extends JFrame {
 		btnAddCom.setBackground(Color.GRAY);
 		btnAddCom.setForeground(Color.WHITE);
 		btnAddCom.setFont(new Font("Dialog", Font.BOLD, 22));
-		btnAddCom.setBounds(551, 365, 302, 111);
+		btnAddCom.setBounds(750, 337, 297, 100);
 
 		btnAddCom.setEnabled(false);
 		contentPane.add(btnAddCom);
 
 		//panel for video player
 		JPanel playerPanel = new JPanel(new BorderLayout());
-		playerPanel.setBounds(33, 41, 506, 399);
+		playerPanel.setBounds(33, 41, 699, 393);
 		mediaPlayerComponent = new EmbeddedMediaPlayerComponent();
 		video = mediaPlayerComponent.getMediaPlayer();
 
 		lblChars = new JLabel("200/200");
 		lblChars.setForeground(Color.WHITE);
-		lblChars.setBounds(795, 170, 70, 15);
+		lblChars.setBounds(980, 170, 70, 15);
 		contentPane.add(lblChars);
 		//simple text area for the user to enter text
 		txtArea = new JTextArea();
@@ -349,7 +349,7 @@ public class Player extends JFrame {
 
 		//Allow text area to scroll
 		JScrollPane scrollPane = new JScrollPane(txtArea);
-		scrollPane.setBounds(551, 41, 302, 122);
+		scrollPane.setBounds(750, 41, 297, 122);
 		contentPane.add(scrollPane);
 
 		playerPanel.add(mediaPlayerComponent, BorderLayout.CENTER);
@@ -392,7 +392,7 @@ public class Player extends JFrame {
 
 		final JLabel timerLabel = new JLabel("0 sec");
 		timerLabel.setForeground(Color.WHITE);
-		timerLabel.setBounds(404, 456, 70, 15);
+		timerLabel.setBounds(662, 455, 70, 15);
 		contentPane.add(timerLabel);
 
 		//Plays the selected mp3 file
@@ -422,7 +422,7 @@ public class Player extends JFrame {
 		});
 		btnPlaymp3.setBackground(Color.GRAY);
 		btnPlaymp3.setForeground(Color.WHITE);
-		btnPlaymp3.setBounds(718, 267, 135, 40);
+		btnPlaymp3.setBounds(905, 260, 142, 40);
 		contentPane.add(btnPlaymp3);
 
 
