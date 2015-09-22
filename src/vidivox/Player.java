@@ -42,6 +42,13 @@ import java.awt.Color;
 import java.awt.SystemColor;
 import javax.swing.UIManager;
 import javax.swing.JScrollPane;
+import javax.swing.JSlider;
+import javax.swing.border.SoftBevelBorder;
+import javax.swing.border.BevelBorder;
+import javax.swing.border.MatteBorder;
+import javax.swing.border.EtchedBorder;
+import javax.swing.border.TitledBorder;
+import javax.swing.border.LineBorder;
 
 /*
  * This is the VIDIVOX prototype for SE206 assignment 3
@@ -99,8 +106,8 @@ public class Player extends JFrame {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 1079, 518);
 		contentPane = new JPanel();
+		contentPane.setForeground(Color.LIGHT_GRAY);
 		contentPane.setBackground(Color.DARK_GRAY);
-		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
 
@@ -424,6 +431,21 @@ public class Player extends JFrame {
 		btnPlaymp3.setForeground(Color.WHITE);
 		btnPlaymp3.setBounds(905, 260, 142, 40);
 		contentPane.add(btnPlaymp3);
+		
+		//Volume slider
+		JSlider volSlider = new JSlider();
+		volSlider.setValue(100);
+		volSlider.addChangeListener(new ChangeListener() {
+			public void stateChanged(ChangeEvent arg0) {
+				int vol = volSlider.getValue();	//get slider value
+				video.setVolume(vol);	//set the video volume
+			}
+		});
+		volSlider.setBorder(new TitledBorder(new LineBorder(new Color(184, 207, 229)), "Volume", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(255, 255, 255)));
+		volSlider.setForeground(Color.BLACK);
+		volSlider.setBackground(Color.DARK_GRAY);
+		volSlider.setBounds(444, 450, 200, 25);
+		contentPane.add(volSlider);
 
 
 
@@ -431,7 +453,12 @@ public class Player extends JFrame {
 		Timer t = new Timer(200, new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				timerLabel.setText((video.getTime()/1000)+ " sec");	//get video time
+				if(video.getMediaPlayerState().toString().equalsIgnoreCase("libvlc_Ended")){
+					timerLabel.setText("End of Video");	//check for end of video
+					//This doesn't actually display, timer refreshes to 0
+				}else{
+					timerLabel.setText((video.getTime()/1000)+ " sec");	//get video time
+				}
 			}
 		}); 
 		t.start();
@@ -472,9 +499,9 @@ public class Player extends JFrame {
 					do {
 						//Check which button was pressed
 						if(arg.equals("FF")){
-							video.skip(10);
+							video.skip(15);
 						}else{
-							video.skip(-10);
+							video.skip(-15);
 						}
 						try {
 							sleep(1);	//Slight delay to prevent big jumps
