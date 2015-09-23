@@ -433,7 +433,7 @@ public class Player extends JFrame {
 		contentPane.add(btnPlaymp3);
 		
 		//Volume slider
-		JSlider volSlider = new JSlider();
+		final JSlider volSlider = new JSlider();
 		volSlider.setValue(100);
 		volSlider.addChangeListener(new ChangeListener() {
 			public void stateChanged(ChangeEvent arg0) {
