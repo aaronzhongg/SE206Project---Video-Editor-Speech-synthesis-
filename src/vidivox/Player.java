@@ -13,6 +13,7 @@ import javax.swing.JButton;
 import javax.swing.JOptionPane;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
+import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 import javax.swing.event.*;
 import javax.swing.Timer;
@@ -20,7 +21,10 @@ import javax.swing.Timer;
 import java.awt.Font;
 
 import uk.co.caprica.vlcj.binding.LibVlc;
+import uk.co.caprica.vlcj.binding.internal.libvlc_media_t;
 import uk.co.caprica.vlcj.component.EmbeddedMediaPlayerComponent;
+import uk.co.caprica.vlcj.player.MediaPlayer;
+import uk.co.caprica.vlcj.player.MediaPlayerEventListener;
 import uk.co.caprica.vlcj.player.embedded.EmbeddedMediaPlayer;
 import uk.co.caprica.vlcj.runtime.RuntimeUtil;
 
@@ -35,11 +39,17 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import javax.swing.JTextArea;
+
 import components.DocumentSizeFilter;
+
 import java.awt.Color;
 import java.awt.SystemColor;
+
 import javax.swing.UIManager;
 import javax.swing.JScrollPane;
 import javax.swing.JSlider;
@@ -55,13 +65,13 @@ import javax.swing.border.LineBorder;
  * Authors: Kaimin Li, Aaron Zhong
  * upi: kli438, azho472
  */
-public class Player extends JFrame {
+public class Player extends JFrame{
 
 	/*
 	 * Instance fields useful throughout the player
 	 */
 	private final EmbeddedMediaPlayerComponent mediaPlayerComponent;
-	private final EmbeddedMediaPlayer video ;
+	protected final EmbeddedMediaPlayer video ;
 	volatile private boolean mouseDown = false;
 	private JPanel contentPane;
 	private boolean isMp3Playing = false;
@@ -75,6 +85,7 @@ public class Player extends JFrame {
 	protected final JTextArea txtArea;
 	protected JButton btnCreateMp;
 	protected static Player frame;
+	protected JSlider vidSlider;
 	/**
 	 * Launch the application.
 	 */
@@ -131,7 +142,7 @@ public class Player extends JFrame {
 				}
 			}
 		});
-		btnReverse.setBounds(33, 450, 70, 25);
+		btnReverse.setBounds(33, 470, 70, 25);
 		contentPane.add(btnReverse);
 
 		//Play and pause button
@@ -148,7 +159,7 @@ public class Player extends JFrame {
 				}
 			}
 		});
-		btnPlay.setBounds(112, 450, 117, 25);
+		btnPlay.setBounds(112, 470, 117, 25);
 		contentPane.add(btnPlay);
 
 		//fastforward button
@@ -175,7 +186,7 @@ public class Player extends JFrame {
 		});
 
 
-		btnFastForward.setBounds(241, 450, 70, 25);
+		btnFastForward.setBounds(241, 470, 70, 25);
 		contentPane.add(btnFastForward);
 
 		//set the maximum character to 200 so the festival voice doesn't die
@@ -209,7 +220,7 @@ public class Player extends JFrame {
 				video.mute();
 			}
 		});
-		btnMute.setBounds(323, 450, 70, 25);
+		btnMute.setBounds(323, 470, 70, 25);
 		contentPane.add(btnMute);
 
 		//Button for listening to text entered
@@ -304,7 +315,7 @@ public class Player extends JFrame {
 				//pick a name for the output file
 				final String comOutName = JOptionPane.showInputDialog("Enter New Video Name: ");
 				File f = new File(comOutName+".avi");
-				
+
 				if(f.exists() && !f.isDirectory()) { 
 					//ask if user would want to overwrite existing file
 					int reply = JOptionPane.showConfirmDialog(null, "File already exists, overwrite?", "Overwrite?", JOptionPane.YES_NO_OPTION);
@@ -345,6 +356,7 @@ public class Player extends JFrame {
 		contentPane.add(lblChars);
 		//simple text area for the user to enter text
 		txtArea = new JTextArea();
+		txtArea.setText("Add Text Here");
 		txtArea.setWrapStyleWord(true);
 		txtArea.setRows(5);
 		txtArea.setToolTipText("Enter text for text to speech. ");
@@ -385,11 +397,18 @@ public class Player extends JFrame {
 					//play the file chosen
 					videoFile = fileChooser.getSelectedFile();
 					video.playMedia(videoFile.getAbsolutePath());
+
 					videoLabel.setText(videoFile.getName());
 					if (mp3File != null){
 						btnAddCom.setEnabled(true);
 					}
+					
+					ProgressBarDoInBackground bar = new ProgressBarDoInBackground(frame);
+					bar.execute();
+
 				}
+
+
 			}
 		});
 		btnBrowseVideo.setBounds(33, 9, 168, 25);
@@ -399,7 +418,7 @@ public class Player extends JFrame {
 
 		final JLabel timerLabel = new JLabel("0 sec");
 		timerLabel.setForeground(Color.WHITE);
-		timerLabel.setBounds(662, 455, 70, 15);
+		timerLabel.setBounds(662, 475, 70, 15);
 		contentPane.add(timerLabel);
 
 		//Plays the selected mp3 file
@@ -424,14 +443,14 @@ public class Player extends JFrame {
 						btnPlaymp3.setText("Play Mp3");
 					}
 				}
-				
+
 			}
 		});
 		btnPlaymp3.setBackground(Color.GRAY);
 		btnPlaymp3.setForeground(Color.WHITE);
 		btnPlaymp3.setBounds(905, 260, 142, 40);
 		contentPane.add(btnPlaymp3);
-		
+
 		//Volume slider
 		final JSlider volSlider = new JSlider();
 		volSlider.setValue(100);
@@ -444,12 +463,30 @@ public class Player extends JFrame {
 		volSlider.setBorder(new TitledBorder(new LineBorder(new Color(184, 207, 229)), "Volume", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(255, 255, 255)));
 		volSlider.setForeground(Color.BLACK);
 		volSlider.setBackground(Color.DARK_GRAY);
-		volSlider.setBounds(444, 450, 200, 25);
+		volSlider.setBounds(444, 470, 200, 25);
 		contentPane.add(volSlider);
+
+		vidSlider = new JSlider();
+		vidSlider.setMinorTickSpacing(5);
+		vidSlider.setMajorTickSpacing(10);
+		vidSlider.setPaintTicks(true);
+		vidSlider.addChangeListener(new ChangeListener() {
+			public void stateChanged(ChangeEvent arg0) {
+				int time = vidSlider.getValue();
+				long vidLen = video.getLength()/100;
+				video.setTime(vidLen * time);
+			}
+		});
+		vidSlider.setForeground(Color.GRAY);
+		vidSlider.setBackground(Color.DARK_GRAY);
+		vidSlider.setBounds(33, 442, 699, 16);
+		vidSlider.setValue(0);
+		contentPane.add(vidSlider);
 
 
 
 		//Timer used to check video time
+		
 		Timer t = new Timer(200, new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -462,7 +499,7 @@ public class Player extends JFrame {
 			}
 		}); 
 		t.start();
-
+		 
 	}
 
 	private void charCount() {
@@ -499,9 +536,9 @@ public class Player extends JFrame {
 					do {
 						//Check which button was pressed
 						if(arg.equals("FF")){
-							video.skip(15);
+							video.skip(20);
 						}else{
-							video.skip(-15);
+							video.skip(-20);
 						}
 						try {
 							sleep(1);	//Slight delay to prevent big jumps
@@ -515,4 +552,5 @@ public class Player extends JFrame {
 			}.start();	
 		}
 	}
+
 }
