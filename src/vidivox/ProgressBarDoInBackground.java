@@ -11,6 +11,7 @@ public class ProgressBarDoInBackground extends SwingWorker<Void,Float>{
 		this.player = player;
 	}
 	
+	//updates the progress bar as the video is playing
 	@Override
 	protected Void doInBackground() throws Exception {
 		

@@ -59,6 +59,7 @@ import javax.swing.border.MatteBorder;
 import javax.swing.border.EtchedBorder;
 import javax.swing.border.TitledBorder;
 import javax.swing.border.LineBorder;
+import java.awt.event.MouseMotionAdapter;
 
 /*
  * This is the VIDIVOX prototype for SE206 assignment 3
@@ -466,17 +467,20 @@ public class Player extends JFrame{
 		volSlider.setBounds(444, 470, 200, 25);
 		contentPane.add(volSlider);
 
+		//Progress bar to show how far the video is in, also allow user to drag the bar to move positions in the video
 		vidSlider = new JSlider();
-		vidSlider.setMinorTickSpacing(5);
-		vidSlider.setMajorTickSpacing(10);
-		vidSlider.setPaintTicks(true);
-		vidSlider.addChangeListener(new ChangeListener() {
-			public void stateChanged(ChangeEvent arg0) {
+		vidSlider.addMouseMotionListener(new MouseMotionAdapter() {
+			@Override
+			public void mouseDragged(MouseEvent e) {
 				int time = vidSlider.getValue();
 				long vidLen = video.getLength()/100;
 				video.setTime(vidLen * time);
 			}
 		});
+		vidSlider.setMinorTickSpacing(5);
+		vidSlider.setMajorTickSpacing(10);
+		vidSlider.setPaintTicks(true);
+		
 		vidSlider.setForeground(Color.GRAY);
 		vidSlider.setBackground(Color.DARK_GRAY);
 		vidSlider.setBounds(33, 442, 699, 16);
