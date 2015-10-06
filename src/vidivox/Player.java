@@ -87,6 +87,8 @@ public class Player extends JFrame{
 	protected JButton btnCreateMp;
 	protected static Player frame;
 	protected JSlider vidSlider;
+	protected EditCommentary edit = new EditCommentary();
+	
 	/**
 	 * Launch the application.
 	 */
@@ -102,6 +104,7 @@ public class Player extends JFrame{
 			public void run() {
 				try {
 					frame = new Player();
+					
 					frame.setVisible(true);					
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -340,7 +343,7 @@ public class Player extends JFrame{
 		btnAddCom.setBackground(Color.GRAY);
 		btnAddCom.setForeground(Color.WHITE);
 		btnAddCom.setFont(new Font("Dialog", Font.BOLD, 22));
-		btnAddCom.setBounds(750, 337, 297, 100);
+		btnAddCom.setBounds(750, 400, 297, 100);
 
 		btnAddCom.setEnabled(false);
 		contentPane.add(btnAddCom);
@@ -486,6 +489,18 @@ public class Player extends JFrame{
 		vidSlider.setBounds(33, 442, 699, 16);
 		vidSlider.setValue(0);
 		contentPane.add(vidSlider);
+		
+		JButton btnNewButton = new JButton("Edit Commentary");
+		btnNewButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				edit.setVisible(true);
+			}
+		});
+		btnNewButton.setForeground(Color.WHITE);
+		btnNewButton.setFont(new Font("Dialog", Font.BOLD, 15));
+		btnNewButton.setBackground(Color.GRAY);
+		btnNewButton.setBounds(750, 337, 297, 51);
+		contentPane.add(btnNewButton);
 
 
 
@@ -556,5 +571,4 @@ public class Player extends JFrame{
 			}.start();	
 		}
 	}
-
 }
