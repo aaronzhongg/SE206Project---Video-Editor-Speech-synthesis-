@@ -91,6 +91,28 @@ public class EditCommentary extends JFrame {
 		contentPane.add(btnAddAudio);
 
 		JButton btnRemoveMp = new JButton("Remove Selected");
+		btnRemoveMp.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				if (audioTable.getSelectedRow() != -1) {
+					if (audioTable.getValueAt(audioTable.getSelectedRow(), 0) != null){
+						mp3File.remove(audioTable.getSelectedRow());
+						for (int i = audioTable.getSelectedRow(); i < 7; i++){
+							if (audioTable.getValueAt(i+1, 0) == null){	
+								audioTable.setValueAt(null, i, 0);
+								audioTable.setValueAt(null, i, 1);
+								audioTable.setValueAt(null, i, 2);
+								audioTable.setValueAt(null, i, 3);
+								break;
+							}
+							for (int j = 0; j < 4; j ++) {
+								audioTable.setValueAt(audioTable.getValueAt(i+1, j), i, j);
+							}
+						}
+						
+					}
+				}
+			}
+		});
 		btnRemoveMp.setForeground(Color.WHITE);
 		btnRemoveMp.setBackground(Color.GRAY);
 		btnRemoveMp.setBounds(400, 158, 155, 50);
