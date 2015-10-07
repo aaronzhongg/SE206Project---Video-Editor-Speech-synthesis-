@@ -286,31 +286,6 @@ public class Player extends JFrame{
 		mp3Label.setBounds(750, 310, 297, 15);
 		contentPane.add(mp3Label);
 
-		//Browser for mp3 files
-		JButton btnBrowseMp = new JButton("Browse mp3...");
-		btnBrowseMp.setBackground(Color.GRAY);
-		btnBrowseMp.setForeground(Color.WHITE);
-		btnBrowseMp.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				//create file chooser and filter (mp3)
-				final JFileChooser fileChooser = new JFileChooser();
-				fileChooser.setAcceptAllFileFilterUsed(false);
-				FileFilter filter = new FileNameExtensionFilter("mp3 files", new String[] {"mp3","MP3"});
-				fileChooser.setFileFilter(filter);
-				int returnVal = fileChooser.showOpenDialog(new JFrame());
-
-				if(returnVal == JFileChooser.APPROVE_OPTION){
-					mp3File = fileChooser.getSelectedFile();
-					mp3Label.setText(mp3File.getName());
-					if (videoFile != null) {
-						btnAddCom.setEnabled(true);
-					}
-				}
-			}
-		});
-		btnBrowseMp.setBounds(750, 260, 135, 40);
-		contentPane.add(btnBrowseMp);
-
 		//Button to combined selected audio and video files
 		btnAddCom = new JButton("Add Commentary\n");
 
@@ -424,36 +399,6 @@ public class Player extends JFrame{
 		timerLabel.setForeground(Color.WHITE);
 		timerLabel.setBounds(662, 475, 70, 15);
 		contentPane.add(timerLabel);
-
-		//Plays the selected mp3 file
-		final JButton btnPlaymp3 = new JButton("Play Mp3");
-		btnPlaymp3.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				//checks whether mp3 is playing or video is
-				if(isMp3Playing == false){
-					if(mp3File != null){
-						isMp3Playing = true;
-						btnPlaymp3.setText("Back to Video");	//change button name
-						video.playMedia(mp3File.getAbsolutePath());
-					}	
-				}else{
-					//click again to go back to video
-					if(videoFile != null){
-						isMp3Playing = false;
-						btnPlaymp3.setText("Play Mp3");
-						video.playMedia(videoFile.getAbsolutePath());
-					}else{
-						isMp3Playing = false;
-						btnPlaymp3.setText("Play Mp3");
-					}
-				}
-
-			}
-		});
-		btnPlaymp3.setBackground(Color.GRAY);
-		btnPlaymp3.setForeground(Color.WHITE);
-		btnPlaymp3.setBounds(905, 260, 142, 40);
-		contentPane.add(btnPlaymp3);
 
 		//Volume slider
 		final JSlider volSlider = new JSlider();

@@ -51,7 +51,7 @@ import java.awt.event.InputMethodEvent;
 
 public class EditCommentary extends JFrame {
 
-	
+
 	private JPanel contentPane;
 	protected JTable audioTable;
 	private final EmbeddedMediaPlayerComponent mediaPlayerComponent;
@@ -106,15 +106,15 @@ public class EditCommentary extends JFrame {
 				int returnVal = fileChooser.showOpenDialog(new JFrame());
 
 				if(returnVal == JFileChooser.APPROVE_OPTION){
-					
+
 					numAudio++;
 					mp3File.add(fileChooser.getSelectedFile());
-					
+
 					int i;
 					for (i = 0; i < 7 ; i ++){
 						if (audioTable.getValueAt(i,0) == null) { 
 							audioTable.setValueAt(mp3File.get(mp3File.size() - 1).getName(), i , 0);
-							
+
 							break;
 						}
 					}
@@ -122,7 +122,7 @@ public class EditCommentary extends JFrame {
 					if (audioTable.getValueAt(6, 0) != null) {
 						btnAddAudio.setEnabled(false);
 					}
-					
+
 				}
 
 
@@ -198,62 +198,75 @@ public class EditCommentary extends JFrame {
 				if(!audio.isPlaying()){
 					btnListen.setText("Listen Selected");
 					isPlaying = false;
-					
+
 				}
 			}
 		}); 
 		t.start();
 
-		
 
-		audioTable = new JTable();
-		audioTable.getDefaultEditor(String.class).addCellEditorListener(
-                new CellEditorListener() {
-                    public void editingCanceled(ChangeEvent e) {
-                    }
 
-                    public void editingStopped(ChangeEvent e) {
-                    	CharSequence check = (CharSequence) audioTable.getValueAt(audioTable.getSelectedRow(), audioTable.getSelectedColumn());
-                        if(Pattern.matches("[0-9][0-9]:[0-5][0-9]", check) == false && check.length() > 0){
-                        	 if (Pattern.matches("[0-9]:[0-5][0-9]", check) == true ) {
-                        		audioTable.setValueAt("0" + check, audioTable.getSelectedRow(), audioTable.getSelectedColumn());
-                        	} else if (Pattern.matches("[0-9]:[0-9]", check) == true) {	
-                        		audioTable.setValueAt("0" + check.charAt(0) + ":" + "0" + check.charAt(2), audioTable.getSelectedRow(), audioTable.getSelectedColumn());
-                        	} else if (Pattern.matches("[0-9][0-9]:[0-9]", check) == true) {	
-                        		audioTable.setValueAt(check.charAt(0) + check.charAt(1) + ":0" + check.charAt(2) , audioTable.getSelectedRow(), audioTable.getSelectedColumn());
-                        	} else if (Pattern.matches("[0-9]", check) == true) {
-                        		audioTable.setValueAt("00:0" + check, audioTable.getSelectedRow(), audioTable.getSelectedColumn());
-                        	} else if (Pattern.matches("[0-5][0-9]", check) == true) {
-                        		audioTable.setValueAt("00:" + check, audioTable.getSelectedRow(), audioTable.getSelectedColumn());
-                        	} else {
-                        		audioTable.setValueAt("",audioTable.getSelectedRow(), audioTable.getSelectedColumn());
-                        		JOptionPane.showMessageDialog(contentPane, "Enter a valid time in the form mm:ss");
-                        	}
-                        }
-                    }
-                });
-		audioTable.setModel(new DefaultTableModel(
-			new Object[][] {
-				{null, null, null, null},
-				{null, null, null, null},
-				{null, null, null, null},
-				{null, null, null, null},
-				{null, null, null, null},
-				{null, null, null, null},
-				{null, null, null, null},
-			},
-			new String[] {
-				"Mp3 Name", "Duration (mm:ss)", "Start Time (mm:ss)", "End Time (mm:ss)"
+		DefaultTableModel TM = new DefaultTableModel();
+		audioTable = new JTable(TM){
+			@Override
+			public boolean isCellEditable(int row,int column) {
+				if (audioTable.getValueAt(row, 0) != null) {
+					switch(column){
+					case 2: return true;
+					default: return false;
+					}
+				} else {
+					return false;
+				}
 			}
-		) {
+		};
+		audioTable.getDefaultEditor(String.class).addCellEditorListener(
+				new CellEditorListener() {
+					public void editingCanceled(ChangeEvent e) {
+					}
+
+					public void editingStopped(ChangeEvent e) {
+						CharSequence check = (CharSequence) audioTable.getValueAt(audioTable.getSelectedRow(), audioTable.getSelectedColumn());
+						if(Pattern.matches("[0-9][0-9]:[0-5][0-9]", check) == false && check.length() > 0){
+							if (Pattern.matches("[0-9]:[0-5][0-9]", check) == true ) {
+								audioTable.setValueAt("0" + check, audioTable.getSelectedRow(), audioTable.getSelectedColumn());
+							} else if (Pattern.matches("[0-9]:[0-9]", check) == true) {	
+								audioTable.setValueAt("0" + check.charAt(0) + ":" + "0" + check.charAt(2), audioTable.getSelectedRow(), audioTable.getSelectedColumn());
+							} else if (Pattern.matches("[0-9][0-9]:[0-9]", check) == true) {	
+								audioTable.setValueAt(check.charAt(0) + check.charAt(1) + ":0" + check.charAt(2) , audioTable.getSelectedRow(), audioTable.getSelectedColumn());
+							} else if (Pattern.matches("[0-9]", check) == true) {
+								audioTable.setValueAt("00:0" + check, audioTable.getSelectedRow(), audioTable.getSelectedColumn());
+							} else if (Pattern.matches("[0-5][0-9]", check) == true) {
+								audioTable.setValueAt("00:" + check, audioTable.getSelectedRow(), audioTable.getSelectedColumn());
+							} else {
+								audioTable.setValueAt("",audioTable.getSelectedRow(), audioTable.getSelectedColumn());
+								JOptionPane.showMessageDialog(contentPane, "Enter a valid time in the form mm:ss");
+							}
+						}
+					}
+				});
+		audioTable.setModel(new DefaultTableModel(
+				new Object[][] {
+						{null, null, null, null},
+						{null, null, null, null},
+						{null, null, null, null},
+						{null, null, null, null},
+						{null, null, null, null},
+						{null, null, null, null},
+						{null, null, null, null},
+				},
+				new String[] {
+						"Mp3 Name", "Duration (mm:ss)", "Start Time (mm:ss)", "End Time (mm:ss)"
+				}
+				) {
 			Class[] columnTypes = new Class[] {
-				Object.class, Long.class, String.class, String.class
+					Object.class, Long.class, String.class, String.class
 			};
 			public Class getColumnClass(int columnIndex) {
 				return columnTypes[columnIndex];
 			}
 			boolean[] columnEditables = new boolean[] {
-				false, false, true, true
+					false, false, true, true
 			};
 			public boolean isCellEditable(int row, int column) {
 				return columnEditables[column];
