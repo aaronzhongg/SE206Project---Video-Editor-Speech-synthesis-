@@ -3,9 +3,15 @@ package vidivox;
 import java.awt.BorderLayout;
 import java.awt.EventQueue;
 
+import javax.sound.sampled.AudioFormat;
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.UnsupportedAudioFileException;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
+import javax.swing.event.CellEditorListener;
+import javax.swing.event.ChangeEvent;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.JButton;
@@ -14,6 +20,7 @@ import java.awt.Color;
 
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.JScrollPane;
 import javax.swing.JProgressBar;
@@ -31,8 +38,16 @@ import uk.co.caprica.vlcj.runtime.RuntimeUtil;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.regex.Pattern;
+
 import javax.swing.Timer;
+
+import java.awt.event.ContainerAdapter;
+import java.awt.event.ContainerEvent;
+import java.awt.event.InputMethodListener;
+import java.awt.event.InputMethodEvent;
 
 public class EditCommentary extends JFrame {
 
@@ -48,10 +63,10 @@ public class EditCommentary extends JFrame {
 	 */
 	public static void main(String[] args) {
 		//add vlc search path
-				NativeLibrary.addSearchPath(
-						RuntimeUtil.getLibVlcLibraryName(), "/Applications/vlc-2.0.0/VLC.app/Contents/MacOS/lib"
-						);
-				Native.loadLibrary(RuntimeUtil.getLibVlcLibraryName(), LibVlc.class);
+		NativeLibrary.addSearchPath(
+				RuntimeUtil.getLibVlcLibraryName(), "/Applications/vlc-2.0.0/VLC.app/Contents/MacOS/lib"
+				);
+		Native.loadLibrary(RuntimeUtil.getLibVlcLibraryName(), LibVlc.class);
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
@@ -90,10 +105,12 @@ public class EditCommentary extends JFrame {
 
 				if(returnVal == JFileChooser.APPROVE_OPTION){
 					mp3File.add(fileChooser.getSelectedFile());
-
-					for (int i = 0; i < 7 ; i ++){
+					
+					int i;
+					for (i = 0; i < 7 ; i ++){
 						if (audioTable.getValueAt(i,0) == null) { 
 							audioTable.setValueAt(mp3File.get(mp3File.size() - 1).getName(), i , 0);
+							
 							break;
 						}
 					}
@@ -101,7 +118,10 @@ public class EditCommentary extends JFrame {
 					if (audioTable.getValueAt(6, 0) != null) {
 						btnAddAudio.setEnabled(false);
 					}
+					
 				}
+
+
 			}
 		});
 		btnAddAudio.setForeground(Color.WHITE);
@@ -159,13 +179,13 @@ public class EditCommentary extends JFrame {
 		btnListen.setBackground(Color.GRAY);
 		btnListen.setBounds(242, 158, 150, 50);
 		contentPane.add(btnListen);
-		
+
 		contentPane.add(mediaPlayerComponent);
 
 		JScrollPane scrollPane = new JScrollPane();
 		scrollPane.setBounds(12, 12, 626, 134);
 		contentPane.add(scrollPane);
-		
+
 		//Timer used to check whether a playing audio file has completed 
 		Timer t = new Timer(200, new ActionListener() {
 			@Override
@@ -173,34 +193,62 @@ public class EditCommentary extends JFrame {
 				if(!audio.isPlaying()){
 					btnListen.setText("Listen Selected");
 					isPlaying = false;
+					
 				}
 			}
 		}); 
 		t.start();
 
+		
+
 		audioTable = new JTable();
+		audioTable.getDefaultEditor(String.class).addCellEditorListener(
+                new CellEditorListener() {
+                    public void editingCanceled(ChangeEvent e) {
+                    }
+
+                    public void editingStopped(ChangeEvent e) {
+                    	CharSequence check = (CharSequence) audioTable.getValueAt(audioTable.getSelectedRow(), audioTable.getSelectedColumn());
+                        if(Pattern.matches("[0-9][0-9]:[0-5][0-9]", check) == false && check.length() > 0){
+                        	 if (Pattern.matches("[0-9]:[0-5][0-9]", check) == true ) {
+                        		audioTable.setValueAt("0" + check, audioTable.getSelectedRow(), audioTable.getSelectedColumn());
+                        	} else if (Pattern.matches("[0-9]:[0-9]", check) == true) {	
+                        		audioTable.setValueAt("0" + check.charAt(0) + ":" + "0" + check.charAt(2), audioTable.getSelectedRow(), audioTable.getSelectedColumn());
+                        	} else if (Pattern.matches("[0-9][0-9]:[0-9]", check) == true) {	
+                        		audioTable.setValueAt(check.charAt(0) + check.charAt(1) + ":0" + check.charAt(2) , audioTable.getSelectedRow(), audioTable.getSelectedColumn());
+                        	} else if (Pattern.matches("[0-9]", check) == true) {
+                        		audioTable.setValueAt("00:0" + check, audioTable.getSelectedRow(), audioTable.getSelectedColumn());
+                        	} else if (Pattern.matches("[0-5][0-9]", check) == true) {
+                        		audioTable.setValueAt("00:" + check, audioTable.getSelectedRow(), audioTable.getSelectedColumn());
+                        	} else {
+                        		audioTable.setValueAt("",audioTable.getSelectedRow(), audioTable.getSelectedColumn());
+                        		JOptionPane.showMessageDialog(contentPane, "Enter a valid time in the form mm:ss");
+                        	}
+                        }
+                    }
+                });
 		audioTable.setModel(new DefaultTableModel(
-				new Object[][] {
-						{null, null, null, null},
-						{null, null, null, null},
-						{null, null, null, null},
-						{null, null, null, null},
-						{null, null, null, null},
-						{null, null, null, null},
-						{null, null, null, null},
-				},
-				new String[] {
-						"Mp3 Name", "Duration (mm:ss)", "Start Time (mm:ss)", "End Time (mm:ss)"
-				}
-				) {
+			new Object[][] {
+				{null, null, null, null},
+				{null, null, null, null},
+				{null, null, null, null},
+				{null, null, null, null},
+				{null, null, null, null},
+				{null, null, null, null},
+				{null, null, null, null},
+			},
+			new String[] {
+				"Mp3 Name", "Duration (mm:ss)", "Start Time (mm:ss)", "End Time (mm:ss)"
+			}
+		) {
 			Class[] columnTypes = new Class[] {
-					Object.class, Object.class, String.class, String.class
+				Object.class, Long.class, String.class, String.class
 			};
 			public Class getColumnClass(int columnIndex) {
 				return columnTypes[columnIndex];
 			}
 			boolean[] columnEditables = new boolean[] {
-					false, false, true, true
+				false, false, true, true
 			};
 			public boolean isCellEditable(int row, int column) {
 				return columnEditables[column];
@@ -210,10 +258,11 @@ public class EditCommentary extends JFrame {
 		audioTable.getColumnModel().getColumn(1).setPreferredWidth(127);
 		audioTable.getColumnModel().getColumn(2).setPreferredWidth(175);
 		audioTable.getColumnModel().getColumn(3).setPreferredWidth(183);
+		audioTable.getTableHeader().setReorderingAllowed(false);
 		scrollPane.setViewportView(audioTable);
-		
-		
+
+
 	}
-	
-	
+
+
 }
