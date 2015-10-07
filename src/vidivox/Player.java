@@ -75,7 +75,7 @@ public class Player extends JFrame{
 	protected final EmbeddedMediaPlayer video ;
 	volatile private boolean mouseDown = false;
 	private JPanel contentPane;
-	protected File videoFile;
+	protected static File videoFile;
 	private DefaultStyledDocument docfilt = new DefaultStyledDocument();
 	private JLabel lblChars;
 	protected static JButton btnAddCom;

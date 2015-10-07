@@ -52,7 +52,7 @@ import javax.swing.SwingConstants;
 import java.awt.Font;
 
 public class EditCommentary extends JFrame {
-	
+
 	static EditCommentary aframe;
 	private JPanel contentPane;
 	protected JTable audioTable;
@@ -60,7 +60,7 @@ public class EditCommentary extends JFrame {
 	protected final EmbeddedMediaPlayer audio;
 	protected ArrayList<File> mp3File = new ArrayList<File>();
 	private boolean isPlaying = false;
-	protected int numAudio = 1;
+	protected int numAudio = 1; //used to keep track of how many audio files added
 
 	/**
 	 * Launch the application.
@@ -88,7 +88,7 @@ public class EditCommentary extends JFrame {
 	 */
 	public EditCommentary() {
 
-		
+
 		mediaPlayerComponent = new EmbeddedMediaPlayerComponent();
 		audio = mediaPlayerComponent.getMediaPlayer();
 		setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
@@ -99,6 +99,7 @@ public class EditCommentary extends JFrame {
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
 
+		//Allow user to add mp3 files to the commentary list
 		final JButton btnAddAudio = new JButton("Add mp3");
 		btnAddAudio.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
@@ -114,6 +115,7 @@ public class EditCommentary extends JFrame {
 					numAudio++;
 					mp3File.add(fileChooser.getSelectedFile());
 
+					//After a audio file is selected add its name to the table and set a default start time as 0s
 					int i;
 					for (i = 0; i < 7 ; i ++){
 						if (audioTable.getValueAt(i,0) == null) { 
@@ -123,8 +125,14 @@ public class EditCommentary extends JFrame {
 						}
 					}
 
+					//if the list is full (max 7 audio files) then disable the add audio button to prevent user from adding more
 					if (audioTable.getValueAt(6, 0) != null) {
 						btnAddAudio.setEnabled(false);
+					}
+
+					//if a video file is selected in main menu, enable the add commentary button
+					if (Player.videoFile != null) {
+						Player.btnAddCom.setEnabled(true);
 					}
 
 				}
@@ -137,6 +145,7 @@ public class EditCommentary extends JFrame {
 		btnAddAudio.setBounds(30, 200, 150, 50);
 		contentPane.add(btnAddAudio);
 
+		//A button to allow users to remove added audio files
 		JButton btnRemoveMp = new JButton("Remove Selected");
 		btnRemoveMp.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
@@ -158,7 +167,12 @@ public class EditCommentary extends JFrame {
 						}
 
 					}
-				}
+
+					if (audioTable.getValueAt(0, 0) == null) {
+						Player.btnAddCom.setEnabled(false);
+
+					}
+				} 
 			}
 		});
 		btnRemoveMp.setForeground(Color.WHITE);
@@ -188,7 +202,7 @@ public class EditCommentary extends JFrame {
 		btnListen.setBackground(Color.GRAY);
 		btnListen.setBounds(192, 200, 150, 50);
 		contentPane.add(btnListen);
-		
+
 		JButton btnClose = new JButton("Close");
 		btnClose.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
@@ -292,7 +306,7 @@ public class EditCommentary extends JFrame {
 		audioTable.getColumnModel().getColumn(3).setPreferredWidth(183);
 		audioTable.getTableHeader().setReorderingAllowed(false);
 		scrollPane.setViewportView(audioTable);
-		
+
 		JLabel lblNewLabel = new JLabel("Commentary Editor");
 		lblNewLabel.setFont(new Font("Dialog", Font.BOLD, 22));
 		lblNewLabel.setHorizontalAlignment(SwingConstants.CENTER);
