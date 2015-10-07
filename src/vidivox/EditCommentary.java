@@ -114,7 +114,7 @@ public class EditCommentary extends JFrame {
 					for (i = 0; i < 7 ; i ++){
 						if (audioTable.getValueAt(i,0) == null) { 
 							audioTable.setValueAt(mp3File.get(mp3File.size() - 1).getName(), i , 0);
-
+							audioTable.setValueAt("00:00", i, 2);
 							break;
 						}
 					}
