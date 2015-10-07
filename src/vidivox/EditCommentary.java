@@ -51,12 +51,14 @@ import java.awt.event.InputMethodEvent;
 
 public class EditCommentary extends JFrame {
 
+	
 	private JPanel contentPane;
-	private JTable audioTable;
+	protected JTable audioTable;
 	private final EmbeddedMediaPlayerComponent mediaPlayerComponent;
 	protected final EmbeddedMediaPlayer audio;
 	protected ArrayList<File> mp3File = new ArrayList<File>();
 	private boolean isPlaying = false;
+	protected int numAudio = 1;
 
 	/**
 	 * Launch the application.
@@ -104,6 +106,8 @@ public class EditCommentary extends JFrame {
 				int returnVal = fileChooser.showOpenDialog(new JFrame());
 
 				if(returnVal == JFileChooser.APPROVE_OPTION){
+					
+					numAudio++;
 					mp3File.add(fileChooser.getSelectedFile());
 					
 					int i;
@@ -135,6 +139,7 @@ public class EditCommentary extends JFrame {
 				if (audioTable.getSelectedRow() != -1) {
 					if (audioTable.getValueAt(audioTable.getSelectedRow(), 0) != null){
 						mp3File.remove(audioTable.getSelectedRow());
+						numAudio--;
 						for (int i = audioTable.getSelectedRow(); i < 7; i++){
 							if (audioTable.getValueAt(i+1, 0) == null){	
 								audioTable.setValueAt(null, i, 0);

@@ -81,7 +81,7 @@ public class Player extends JFrame{
 	private DefaultStyledDocument docfilt = new DefaultStyledDocument();
 	private JLabel lblChars;
 	protected final JLabel mp3Label;
-	protected JButton btnAddCom;
+	protected static JButton btnAddCom;
 	protected JButton btnListen;
 	protected final JTextArea txtArea;
 	protected JButton btnCreateMp;
