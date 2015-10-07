@@ -17,7 +17,7 @@ public class ProgressBarDoInBackground extends SwingWorker<Void,Float>{
 		
 		while (player.video.getPosition() != 1){
 			publish(player.video.getPosition());
-			Thread.sleep(400);
+			Thread.sleep(200);
 		}
 		return null;
 	}

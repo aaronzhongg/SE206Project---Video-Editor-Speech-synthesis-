@@ -20,21 +20,38 @@ import javax.swing.JProgressBar;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 
+import com.sun.jna.Native;
+import com.sun.jna.NativeLibrary;
+
+import uk.co.caprica.vlcj.binding.LibVlc;
+import uk.co.caprica.vlcj.component.EmbeddedMediaPlayerComponent;
+import uk.co.caprica.vlcj.player.embedded.EmbeddedMediaPlayer;
+import uk.co.caprica.vlcj.runtime.RuntimeUtil;
+
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.io.File;
 import java.util.ArrayList;
+import javax.swing.Timer;
 
 public class EditCommentary extends JFrame {
 
 	private JPanel contentPane;
 	private JTable audioTable;
+	private final EmbeddedMediaPlayerComponent mediaPlayerComponent;
+	protected final EmbeddedMediaPlayer audio;
 	protected ArrayList<File> mp3File = new ArrayList<File>();
+	private boolean isPlaying = false;
 
 	/**
 	 * Launch the application.
 	 */
 	public static void main(String[] args) {
+		//add vlc search path
+				NativeLibrary.addSearchPath(
+						RuntimeUtil.getLibVlcLibraryName(), "/Applications/vlc-2.0.0/VLC.app/Contents/MacOS/lib"
+						);
+				Native.loadLibrary(RuntimeUtil.getLibVlcLibraryName(), LibVlc.class);
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
@@ -51,6 +68,8 @@ public class EditCommentary extends JFrame {
 	 * Create the frame.
 	 */
 	public EditCommentary() {
+		mediaPlayerComponent = new EmbeddedMediaPlayerComponent();
+		audio = mediaPlayerComponent.getMediaPlayer();
 		setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
 		setBounds(100, 100, 650, 241);
 		contentPane = new JPanel();
@@ -78,7 +97,7 @@ public class EditCommentary extends JFrame {
 							break;
 						}
 					}
-					
+
 					if (audioTable.getValueAt(6, 0) != null) {
 						btnAddAudio.setEnabled(false);
 					}
@@ -108,7 +127,7 @@ public class EditCommentary extends JFrame {
 								audioTable.setValueAt(audioTable.getValueAt(i+1, j), i, j);
 							}
 						}
-						
+
 					}
 				}
 			}
@@ -118,15 +137,46 @@ public class EditCommentary extends JFrame {
 		btnRemoveMp.setBounds(400, 158, 155, 50);
 		contentPane.add(btnRemoveMp);
 
-		JButton btnNewButton = new JButton("Listen Selected");
-		btnNewButton.setForeground(Color.WHITE);
-		btnNewButton.setBackground(Color.GRAY);
-		btnNewButton.setBounds(242, 158, 150, 50);
-		contentPane.add(btnNewButton);
+		final JButton btnListen = new JButton("Listen Selected");
+		btnListen.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				if(audioTable.getSelectedRow() != -1){
+					if(isPlaying == false && audioTable.getValueAt(audioTable.getSelectedRow(), 0) != null){
+						isPlaying = true;
+						audio.playMedia(mp3File.get(audioTable.getSelectedRow()).getAbsolutePath());
+						btnListen.setText("Stop Listening");	//change button name
+					}	
+					else{
+						//Stop playing the audio file
+						isPlaying = false;
+						btnListen.setText("Listen Selected");
+						audio.stop();
+					}
+				}
+			}
+		});
+		btnListen.setForeground(Color.WHITE);
+		btnListen.setBackground(Color.GRAY);
+		btnListen.setBounds(242, 158, 150, 50);
+		contentPane.add(btnListen);
+		
+		contentPane.add(mediaPlayerComponent);
 
 		JScrollPane scrollPane = new JScrollPane();
 		scrollPane.setBounds(12, 12, 626, 134);
 		contentPane.add(scrollPane);
+		
+		//Timer used to check whether a playing audio file has completed 
+		Timer t = new Timer(200, new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if(!audio.isPlaying()){
+					btnListen.setText("Listen Selected");
+					isPlaying = false;
+				}
+			}
+		}); 
+		t.start();
 
 		audioTable = new JTable();
 		audioTable.setModel(new DefaultTableModel(
@@ -161,5 +211,9 @@ public class EditCommentary extends JFrame {
 		audioTable.getColumnModel().getColumn(2).setPreferredWidth(175);
 		audioTable.getColumnModel().getColumn(3).setPreferredWidth(183);
 		scrollPane.setViewportView(audioTable);
+		
+		
 	}
+	
+	
 }
