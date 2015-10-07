@@ -48,10 +48,12 @@ import java.awt.event.ContainerAdapter;
 import java.awt.event.ContainerEvent;
 import java.awt.event.InputMethodListener;
 import java.awt.event.InputMethodEvent;
+import javax.swing.SwingConstants;
+import java.awt.Font;
 
 public class EditCommentary extends JFrame {
-
-
+	
+	static EditCommentary aframe;
 	private JPanel contentPane;
 	protected JTable audioTable;
 	private final EmbeddedMediaPlayerComponent mediaPlayerComponent;
@@ -72,8 +74,8 @@ public class EditCommentary extends JFrame {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					EditCommentary frame = new EditCommentary();
-					frame.setVisible(true);
+					aframe = new EditCommentary();
+					aframe.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -85,10 +87,12 @@ public class EditCommentary extends JFrame {
 	 * Create the frame.
 	 */
 	public EditCommentary() {
+
+		
 		mediaPlayerComponent = new EmbeddedMediaPlayerComponent();
 		audio = mediaPlayerComponent.getMediaPlayer();
 		setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
-		setBounds(100, 100, 650, 241);
+		setBounds(100, 100, 650, 300);
 		contentPane = new JPanel();
 		contentPane.setBackground(Color.DARK_GRAY);
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -130,7 +134,7 @@ public class EditCommentary extends JFrame {
 		});
 		btnAddAudio.setForeground(Color.WHITE);
 		btnAddAudio.setBackground(Color.GRAY);
-		btnAddAudio.setBounds(80, 158, 150, 50);
+		btnAddAudio.setBounds(30, 200, 150, 50);
 		contentPane.add(btnAddAudio);
 
 		JButton btnRemoveMp = new JButton("Remove Selected");
@@ -159,7 +163,7 @@ public class EditCommentary extends JFrame {
 		});
 		btnRemoveMp.setForeground(Color.WHITE);
 		btnRemoveMp.setBackground(Color.GRAY);
-		btnRemoveMp.setBounds(400, 158, 155, 50);
+		btnRemoveMp.setBounds(354, 200, 155, 50);
 		contentPane.add(btnRemoveMp);
 
 		final JButton btnListen = new JButton("Listen Selected");
@@ -182,13 +186,23 @@ public class EditCommentary extends JFrame {
 		});
 		btnListen.setForeground(Color.WHITE);
 		btnListen.setBackground(Color.GRAY);
-		btnListen.setBounds(242, 158, 150, 50);
+		btnListen.setBounds(192, 200, 150, 50);
 		contentPane.add(btnListen);
+		
+		JButton btnClose = new JButton("Close");
+		btnClose.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				setVisible(false);
+			}
+		});
+		btnClose.setBackground(Color.LIGHT_GRAY);
+		btnClose.setBounds(527, 200, 85, 50);
+		contentPane.add(btnClose);
 
 		contentPane.add(mediaPlayerComponent);
 
 		JScrollPane scrollPane = new JScrollPane();
-		scrollPane.setBounds(12, 12, 626, 134);
+		scrollPane.setBounds(12, 50, 626, 134);
 		contentPane.add(scrollPane);
 
 		//Timer used to check whether a playing audio file has completed 
@@ -278,9 +292,14 @@ public class EditCommentary extends JFrame {
 		audioTable.getColumnModel().getColumn(3).setPreferredWidth(183);
 		audioTable.getTableHeader().setReorderingAllowed(false);
 		scrollPane.setViewportView(audioTable);
+		
+		JLabel lblNewLabel = new JLabel("Commentary Editor");
+		lblNewLabel.setFont(new Font("Dialog", Font.BOLD, 22));
+		lblNewLabel.setHorizontalAlignment(SwingConstants.CENTER);
+		lblNewLabel.setForeground(Color.WHITE);
+		lblNewLabel.setBounds(30, 10, 582, 30);
+		contentPane.add(lblNewLabel);
 
 
 	}
-
-
 }

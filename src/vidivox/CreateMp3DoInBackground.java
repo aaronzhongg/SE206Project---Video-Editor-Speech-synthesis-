@@ -39,16 +39,6 @@ public class CreateMp3DoInBackground extends SwingWorker<Void,Void> {
 
 	@Override
 	protected void done(){
-		//set the newly create file as the selected mp3 file
-		URI mp3url;
-		try { 
-			//create URI from the path of the mp3 created (in the current directory)
-			mp3url = new URI("file:///"+System.getProperty("user.dir")+"/"+output+".mp3");
-			player.mp3File = new File(mp3url);
-			player.mp3Label.setText(player.mp3File.getName());
-		} catch (URISyntaxException e1) {
-			e1.printStackTrace();
-		}
 
 		//remove the wav file that was created
 		try {
@@ -58,8 +48,5 @@ public class CreateMp3DoInBackground extends SwingWorker<Void,Void> {
 			e.printStackTrace();
 		}
 		
-		if (player.videoFile != null) {
-			player.btnAddCom.setEnabled(true);
-		}
 	}
 }

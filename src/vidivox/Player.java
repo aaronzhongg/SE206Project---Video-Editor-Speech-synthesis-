@@ -75,12 +75,9 @@ public class Player extends JFrame{
 	protected final EmbeddedMediaPlayer video ;
 	volatile private boolean mouseDown = false;
 	private JPanel contentPane;
-	private boolean isMp3Playing = false;
 	protected File videoFile;
-	protected File mp3File;
 	private DefaultStyledDocument docfilt = new DefaultStyledDocument();
 	private JLabel lblChars;
-	protected final JLabel mp3Label;
 	protected static JButton btnAddCom;
 	protected JButton btnListen;
 	protected final JTextArea txtArea;
@@ -280,12 +277,6 @@ public class Player extends JFrame{
 		btnCreateMp.setBounds(905, 192, 142, 40);
 		contentPane.add(btnCreateMp);
 
-		//label for mp3 file
-		mp3Label = new JLabel("No mp3 file chosen");
-		mp3Label.setForeground(Color.WHITE);
-		mp3Label.setBounds(750, 310, 297, 15);
-		contentPane.add(mp3Label);
-
 		//Button to combined selected audio and video files
 		btnAddCom = new JButton("Add Commentary\n");
 
@@ -318,7 +309,7 @@ public class Player extends JFrame{
 		btnAddCom.setBackground(Color.GRAY);
 		btnAddCom.setForeground(Color.WHITE);
 		btnAddCom.setFont(new Font("Dialog", Font.BOLD, 22));
-		btnAddCom.setBounds(750, 400, 297, 100);
+		btnAddCom.setBounds(750, 334, 297, 100);
 
 		btnAddCom.setEnabled(false);
 		contentPane.add(btnAddCom);
@@ -378,9 +369,6 @@ public class Player extends JFrame{
 					video.playMedia(videoFile.getAbsolutePath());
 
 					videoLabel.setText(videoFile.getName());
-					if (mp3File != null){
-						btnAddCom.setEnabled(true);
-					}
 					
 					ProgressBarDoInBackground bar = new ProgressBarDoInBackground(frame);
 					bar.execute();
@@ -442,9 +430,9 @@ public class Player extends JFrame{
 			}
 		});
 		btnNewButton.setForeground(Color.WHITE);
-		btnNewButton.setFont(new Font("Dialog", Font.BOLD, 15));
+		btnNewButton.setFont(new Font("Dialog", Font.BOLD, 22));
 		btnNewButton.setBackground(Color.GRAY);
-		btnNewButton.setBounds(750, 337, 297, 51);
+		btnNewButton.setBounds(750, 244, 297, 78);
 		contentPane.add(btnNewButton);
 
 
