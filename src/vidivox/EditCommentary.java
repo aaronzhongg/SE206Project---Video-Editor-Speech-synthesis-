@@ -120,7 +120,7 @@ public class EditCommentary extends JFrame {
 					for (i = 0; i < 7 ; i ++){
 						if (audioTable.getValueAt(i,0) == null) { 
 							audioTable.setValueAt(mp3File.get(mp3File.size() - 1).getName(), i , 0);
-							audioTable.setValueAt("00:00", i, 2);
+							audioTable.setValueAt("00:00", i, 1);
 							break;
 						}
 					}
@@ -149,19 +149,17 @@ public class EditCommentary extends JFrame {
 		JButton btnRemoveMp = new JButton("Remove Selected");
 		btnRemoveMp.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				if (audioTable.getSelectedRow() != -1) {
-					if (audioTable.getValueAt(audioTable.getSelectedRow(), 0) != null){
+				if (audioTable.getSelectedRow() != -1) { //make sure user has actually selected a row
+					if (audioTable.getValueAt(audioTable.getSelectedRow(), 0) != null){ 
 						mp3File.remove(audioTable.getSelectedRow());
 						numAudio--;
-						for (int i = audioTable.getSelectedRow(); i < 7; i++){
+						for (int i = audioTable.getSelectedRow(); i < 7; i++){ //remove the selected row and shift others up
 							if (audioTable.getValueAt(i+1, 0) == null){	
 								audioTable.setValueAt(null, i, 0);
 								audioTable.setValueAt(null, i, 1);
-								audioTable.setValueAt(null, i, 2);
-								audioTable.setValueAt(null, i, 3);
 								break;
 							}
-							for (int j = 0; j < 4; j ++) {
+							for (int j = 0; j < 2; j ++) {
 								audioTable.setValueAt(audioTable.getValueAt(i+1, j), i, j);
 							}
 						}
@@ -169,7 +167,7 @@ public class EditCommentary extends JFrame {
 					}
 
 					if (audioTable.getValueAt(0, 0) == null) {
-						Player.btnAddCom.setEnabled(false);
+						Player.btnAddCom.setEnabled(false); //if everything is removed, disable add commentary button
 
 					}
 				} 
@@ -180,7 +178,7 @@ public class EditCommentary extends JFrame {
 		btnRemoveMp.setBounds(354, 200, 155, 50);
 		contentPane.add(btnRemoveMp);
 
-		final JButton btnListen = new JButton("Listen Selected");
+		final JButton btnListen = new JButton("Listen Selected"); //Allow user to listen to an added mp3
 		btnListen.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				if(audioTable.getSelectedRow() != -1){
@@ -203,6 +201,7 @@ public class EditCommentary extends JFrame {
 		btnListen.setBounds(192, 200, 150, 50);
 		contentPane.add(btnListen);
 
+		//close window but keep everything edited in the window
 		JButton btnClose = new JButton("Close");
 		btnClose.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
@@ -213,6 +212,7 @@ public class EditCommentary extends JFrame {
 		btnClose.setBounds(527, 200, 85, 50);
 		contentPane.add(btnClose);
 
+		//for vlcj to play mp3
 		contentPane.add(mediaPlayerComponent);
 
 		JScrollPane scrollPane = new JScrollPane();
@@ -233,14 +233,14 @@ public class EditCommentary extends JFrame {
 		t.start();
 
 
-
+		//table to disable all info
 		DefaultTableModel TM = new DefaultTableModel();
 		audioTable = new JTable(TM){
 			@Override
 			public boolean isCellEditable(int row,int column) {
 				if (audioTable.getValueAt(row, 0) != null) {
 					switch(column){
-					case 2: return true;
+					case 1: return true;
 					default: return false;
 					}
 				} else {
@@ -248,6 +248,7 @@ public class EditCommentary extends JFrame {
 				}
 			}
 		};
+		//check if cell has been edited and validity of input
 		audioTable.getDefaultEditor(String.class).addCellEditorListener(
 				new CellEditorListener() {
 					public void editingCanceled(ChangeEvent e) {
@@ -267,46 +268,45 @@ public class EditCommentary extends JFrame {
 							} else if (Pattern.matches("[0-5][0-9]", check) == true) {
 								audioTable.setValueAt("00:" + check, audioTable.getSelectedRow(), audioTable.getSelectedColumn());
 							} else {
-								audioTable.setValueAt("",audioTable.getSelectedRow(), audioTable.getSelectedColumn());
+								audioTable.setValueAt("00:00",audioTable.getSelectedRow(), audioTable.getSelectedColumn());
 								JOptionPane.showMessageDialog(contentPane, "Enter a valid time in the form mm:ss");
 							}
 						}
 					}
 				});
 		audioTable.setModel(new DefaultTableModel(
-				new Object[][] {
-						{null, null, null, null},
-						{null, null, null, null},
-						{null, null, null, null},
-						{null, null, null, null},
-						{null, null, null, null},
-						{null, null, null, null},
-						{null, null, null, null},
-				},
-				new String[] {
-						"Mp3 Name", "Duration (mm:ss)", "Start Time (mm:ss)", "End Time (mm:ss)"
-				}
-				) {
+			new Object[][] {
+				{null, null},
+				{null, null},
+				{null, null},
+				{null, null},
+				{null, null},
+				{null, null},
+				{null, null},
+			},
+			new String[] {
+				"Mp3 Name", "Start in video at (mm:ss) - Editable"
+			}
+		) {
 			Class[] columnTypes = new Class[] {
-					Object.class, Long.class, String.class, String.class
+				Object.class, String.class
 			};
 			public Class getColumnClass(int columnIndex) {
 				return columnTypes[columnIndex];
 			}
 			boolean[] columnEditables = new boolean[] {
-					false, false, true, true
+				false, false
 			};
 			public boolean isCellEditable(int row, int column) {
 				return columnEditables[column];
 			}
 		});
 		audioTable.getColumnModel().getColumn(0).setPreferredWidth(171);
-		audioTable.getColumnModel().getColumn(1).setPreferredWidth(127);
-		audioTable.getColumnModel().getColumn(2).setPreferredWidth(175);
-		audioTable.getColumnModel().getColumn(3).setPreferredWidth(183);
+		audioTable.getColumnModel().getColumn(1).setPreferredWidth(197);
 		audioTable.getTableHeader().setReorderingAllowed(false);
 		scrollPane.setViewportView(audioTable);
 
+		//title
 		JLabel lblNewLabel = new JLabel("Commentary Editor");
 		lblNewLabel.setFont(new Font("Dialog", Font.BOLD, 22));
 		lblNewLabel.setHorizontalAlignment(SwingConstants.CENTER);

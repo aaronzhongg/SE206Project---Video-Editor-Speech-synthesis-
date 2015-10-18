@@ -359,7 +359,7 @@ public class Player extends JFrame{
 				//Add file chooser as well as set a filter so that user only picks avi or mp4 files
 				final JFileChooser fileChooser = new JFileChooser();
 				fileChooser.setAcceptAllFileFilterUsed(false);
-				FileFilter filter = new FileNameExtensionFilter("Video files (avi and mp4)", new String[] {"avi", "AVI"});
+				FileFilter filter = new FileNameExtensionFilter("Video files (avi)", new String[] {"avi", "AVI"});
 				fileChooser.setFileFilter(filter); 
 				int returnVal = fileChooser.showOpenDialog(new JFrame());
 

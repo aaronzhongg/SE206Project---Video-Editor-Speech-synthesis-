@@ -16,7 +16,7 @@ public class AddComDoInBackground extends SwingWorker<Void, Void>{
 	protected Void doInBackground() throws Exception {
 		String audioInfo = "";;
 		for (int i = 0; i < player.edit.numAudio - 1; i ++) {
-			String[] temp = ((String) player.edit.audioTable.getValueAt(i,2)).split(":");
+			String[] temp = ((String) player.edit.audioTable.getValueAt(i,1)).split(":");
 			int min = Integer.parseInt(temp[0]);
 			int sec = Integer.parseInt(temp[1]);
 			int time = 60*min + sec;
