@@ -5,7 +5,9 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 
+import javax.swing.JOptionPane;
 import javax.swing.SwingWorker;
+
 import vidivox.Player;
 public class CreateMp3DoInBackground extends SwingWorker<Void,Void> {
 	private String output;
@@ -42,6 +44,7 @@ public class CreateMp3DoInBackground extends SwingWorker<Void,Void> {
 
 		//remove the wav file that was created
 		try {
+			JOptionPane.showMessageDialog(null, "Sucessfully created text-to-speech mp3");
 			File del = new File(output+".wav");
 			del.delete();
 		} catch (Exception e) {
