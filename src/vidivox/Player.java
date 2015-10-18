@@ -372,6 +372,10 @@ public class Player extends JFrame{
 					
 					ProgressBarDoInBackground bar = new ProgressBarDoInBackground(frame);
 					bar.execute();
+					
+					if (edit.numAudio != 1){
+						btnAddCom.setEnabled(true);
+					}
 
 				}
 

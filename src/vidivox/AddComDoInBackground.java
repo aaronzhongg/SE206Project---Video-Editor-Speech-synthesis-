@@ -2,6 +2,7 @@ package vidivox;
 
 import java.io.File;
 
+import javax.swing.JOptionPane;
 import javax.swing.SwingWorker;
 
 public class AddComDoInBackground extends SwingWorker<Void, Void>{
@@ -14,7 +15,7 @@ public class AddComDoInBackground extends SwingWorker<Void, Void>{
 	}
 	@Override
 	protected Void doInBackground() throws Exception {
-		String audioInfo = "";;
+		String audioInfo = "";
 		for (int i = 0; i < player.edit.numAudio - 1; i ++) {
 			String[] temp = ((String) player.edit.audioTable.getValueAt(i,1)).split(":");
 			int min = Integer.parseInt(temp[0]);
@@ -25,7 +26,7 @@ public class AddComDoInBackground extends SwingWorker<Void, Void>{
 
 		//FFMPEG commands to split audio from video, combine the two audios and re attache the audio and video  
 		ProcessBuilder splitter = new ProcessBuilder("/bin/bash", "-c", "ffmpeg -i " + player.videoFile.getAbsolutePath() + audioInfo + " -filter_complex amix=inputs=" + player.edit.numAudio +":duration=first -async 1 temp.mp3");
-		ProcessBuilder combiner = new ProcessBuilder("/bin/bash", "-c", "ffmpeg -i temp.mp3 -i " + player.videoFile.getAbsolutePath() + " -map 0:a -map 1:v " + comOutName + ".avi");
+		ProcessBuilder combiner = new ProcessBuilder("/bin/bash", "-c", "ffmpeg -i tempjekjek.mp3 -i " + player.videoFile.getAbsolutePath() + " -map 0:a -map 1:v " + comOutName + ".avi");
 
 		Process split = splitter.start();
 		split.waitFor();
@@ -38,7 +39,8 @@ public class AddComDoInBackground extends SwingWorker<Void, Void>{
 	protected void done(){
 		//remove the mp3 file that was created
 		try {
-			File del = new File("temp.mp3");
+			JOptionPane.showMessageDialog(null, "Merge sucessful");
+			File del = new File("tempjekjek.mp3");
 			del.delete();
 		} catch (Exception e) {
 			e.printStackTrace();
