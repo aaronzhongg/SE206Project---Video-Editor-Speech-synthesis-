@@ -426,6 +426,14 @@ public class Player extends JFrame{
 		
 		//************************** Volume slider **************************************
 		volSlider = new JSlider();
+		volSlider.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				double p = 100 * (e.getX() / 200.00);
+				volSlider.setValue((int)p);
+				video.setVolume((int)p);
+			}
+		});
 		volSlider.setValue(100);
 		volSlider.addChangeListener(new ChangeListener() {
 			public void stateChanged(ChangeEvent arg0) {
@@ -442,7 +450,18 @@ public class Player extends JFrame{
 		
 		//**Progress bar to show how far the video is in, also allow user to drag the bar to move positions in the video**
 		vidSlider = new JSlider();
+		vidSlider.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				double p = 100 * (e.getX() / 700.00);
+				vidSlider.setValue((int)p);
+				int time = vidSlider.getValue();
+				long vidLen = video.getLength()/100;
+				video.setTime(vidLen * time);
+			}
+		});
 		vidSlider.addMouseMotionListener(new MouseMotionAdapter() {
+			
 			@Override
 			public void mouseDragged(MouseEvent e) {
 				int time = vidSlider.getValue();
