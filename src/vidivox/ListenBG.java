@@ -4,10 +4,10 @@ import java.io.IOException;
 
 import javax.swing.SwingWorker;
 
-public class ListenDoInBackground extends SwingWorker<Void, Void>{
+public class ListenBG extends SwingWorker<Void, Void>{
 	private Player player;
 	
-	public ListenDoInBackground(Player p){
+	public ListenBG(Player p){
 		player = p;
 	}
 	@Override

@@ -59,12 +59,18 @@ import javax.swing.border.MatteBorder;
 import javax.swing.border.EtchedBorder;
 import javax.swing.border.TitledBorder;
 import javax.swing.border.LineBorder;
+
 import java.awt.event.MouseMotionAdapter;
 
 /*
- * This is the VIDIVOX prototype for SE206 assignment 3
- * Authors: Kaimin Li, Aaron Zhong
- * upi: kli438, azho472
+ * This is the VIDIVOX project.
+ * 
+ * This class is for the main screen of VIDIVOX, it consists of visual components
+ * such as labels and buttons, and also ActionListeners for the buttons
+ * Authors: Aaron Zhong
+ * upi: azho472
+ * 
+ *
  */
 public class Player extends JFrame{
 
@@ -134,10 +140,13 @@ public class Player extends JFrame{
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
 
-		//Reverse button
+		
+		// ************** Rewind button ******************
 		btnReverse = new JButton("<<");
 		btnReverse.setForeground(SystemColor.text);
 		btnReverse.setBackground(Color.GRAY);
+		btnReverse.setBounds(33, 470, 70, 25);
+		//MouseListener for rewind button
 		btnReverse.addMouseListener(new MouseAdapter() {
 			//hold down to reverse, release to stop reversing
 			@Override
@@ -154,13 +163,15 @@ public class Player extends JFrame{
 				}
 			}
 		});
-		btnReverse.setBounds(33, 470, 70, 25);
 		contentPane.add(btnReverse);
-
-		//Play and pause button
+		// **************************************************************
+		
+		//**************** Play and pause button **************************
 		btnPlay = new JButton("Play/Pause");
 		btnPlay.setForeground(SystemColor.text);
 		btnPlay.setBackground(Color.GRAY);
+		
+		//ActionListener for the play/pause button
 		btnPlay.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				//check if video is playing and choose action accordingly
@@ -173,12 +184,14 @@ public class Player extends JFrame{
 		});
 		btnPlay.setBounds(112, 470, 117, 25);
 		contentPane.add(btnPlay);
-
-		//fastforward button
+		//*****************************************************************
+		
+		//********************* fastforward button ************************
 		btnFastForward = new JButton(">>");
 		btnFastForward.setForeground(SystemColor.text);
 		btnFastForward.setBackground(Color.GRAY);
 
+		//MouseListener for fast forwarding
 		btnFastForward.addMouseListener(new MouseAdapter() {
 
 			//If held down it will FF, stops FFing when released.
@@ -196,16 +209,15 @@ public class Player extends JFrame{
 				}
 			}
 		});
-
-
 		btnFastForward.setBounds(241, 470, 70, 25);
 		contentPane.add(btnFastForward);
+		//******************************************************************
 
+		//**************** Document Filter to count characters ************************
 		//set the maximum character to 200 so the festival voice doesn't die
 		docfilt.setDocumentFilter(new DocumentSizeFilter(200));
 		//add a listener to show user how many characters remaining
 		docfilt.addDocumentListener(new DocumentListener(){
-
 			@Override
 			public void changedUpdate(DocumentEvent e) {
 				charCount();
@@ -222,8 +234,9 @@ public class Player extends JFrame{
 			}
 
 		});
+		//******************************************************************
 
-		//Simple mute button
+		//******************* Simple mute button ***************************
 		btnMute = new JButton("Mute");
 		btnMute.setForeground(SystemColor.text);
 		btnMute.setBackground(Color.GRAY);
@@ -234,33 +247,36 @@ public class Player extends JFrame{
 		});
 		btnMute.setBounds(323, 470, 70, 25);
 		contentPane.add(btnMute);
-
-		//Button for listening to text entered
+		//*******************************************************************
+		
+		//******************** Button for listening to text entered **********
 		btnListen = new JButton("Listen");
 		btnListen.setEnabled(false);
 		btnListen.setBackground(Color.GRAY);
 		btnListen.setForeground(Color.WHITE);
+		// ActionListener to perform the speaking when pressed
 		btnListen.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 
 				//disable listen button so speak only one thing at a time
 				btnListen.setEnabled(false);
 
-				ListenDoInBackground ListenWorker = new ListenDoInBackground(frame);
+				ListenBG ListenWorker = new ListenBG(frame);
 
 				//execute SwingWorker
 				ListenWorker.execute();
 			}
 		});
-
-		//Button to allow user to create an mp3 file from the text entered
 		btnListen.setBounds(750, 192, 135, 40);
 		contentPane.add(btnListen);
-
+		//******************************************************************
+		
+		//********************** Create mp3 (TTS) *****************************
 		btnCreateMp = new JButton("Create mp3");
 		btnCreateMp.setEnabled(false);
 		btnCreateMp.setBackground(Color.GRAY);
 		btnCreateMp.setForeground(Color.WHITE);
+		//ActionListener: Creates mp3 from text entered TTS
 		btnCreateMp.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				//ask user to enter desired output name
@@ -271,26 +287,29 @@ public class Player extends JFrame{
 						//ask if user would want to overwrite existing file
 						int reply = JOptionPane.showConfirmDialog(null, "File already exists, overwrite?", "Overwrite?", JOptionPane.YES_NO_OPTION);
 						if (reply == JOptionPane.YES_OPTION){
-							CreateMp3DoInBackground maker = new CreateMp3DoInBackground(frame, output);
+							CreateMp3BG maker = new CreateMp3BG(frame, output);
 
 							maker.execute();
 						}
 					} else {
-						CreateMp3DoInBackground maker = new CreateMp3DoInBackground(frame, output);
+						CreateMp3BG maker = new CreateMp3BG(frame, output);
 
 						maker.execute();
 					}
 				}
 			}
 		});
-
-
 		btnCreateMp.setBounds(905, 192, 142, 40);
 		contentPane.add(btnCreateMp);
-
-		//Button to combined selected audio and video files
-		btnAddCom = new JButton("Add Commentary\n");
-
+		//******************************************************************
+		
+		//*************Button to combined selected audio and video files*************
+		btnAddCom = new JButton("Merge Video/Audio\n");
+		btnAddCom.setBackground(Color.GRAY);
+		btnAddCom.setForeground(Color.WHITE);
+		btnAddCom.setFont(new Font("Dialog", Font.BOLD, 22));
+		btnAddCom.setBounds(750, 334, 297, 100);
+		btnAddCom.setEnabled(false);
 		btnAddCom.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				//pick a name for the output file
@@ -300,42 +319,42 @@ public class Player extends JFrame{
 				if(f.exists() && !f.isDirectory()) { 
 					//ask if user would want to overwrite existing file
 					int reply = JOptionPane.showConfirmDialog(null, "File already exists, overwrite?", "Overwrite?", JOptionPane.YES_NO_OPTION);
+					
 					if (reply == JOptionPane.YES_OPTION){
 						//generate swingworker instance
-						AddComDoInBackground adder = new AddComDoInBackground(frame, comOutName);
-
+						AddCommentaryBG adder = new AddCommentaryBG(frame, comOutName);
 						adder.execute();
 					}
+					
 				} else {
 					//generate swingworker instance
-					AddComDoInBackground adder = new AddComDoInBackground(frame, comOutName);
-
+					AddCommentaryBG adder = new AddCommentaryBG(frame, comOutName);
 					adder.execute();
 				}
 
 
 			}
 		});
-
-		btnAddCom.setBackground(Color.GRAY);
-		btnAddCom.setForeground(Color.WHITE);
-		btnAddCom.setFont(new Font("Dialog", Font.BOLD, 22));
-		btnAddCom.setBounds(750, 334, 297, 100);
-
-		btnAddCom.setEnabled(false);
 		contentPane.add(btnAddCom);
-
-		//panel for video player
-		playerPanel = new JPanel(new BorderLayout());
-		playerPanel.setBounds(33, 41, 699, 393);
-		mediaPlayerComponent = new EmbeddedMediaPlayerComponent();
-		video = mediaPlayerComponent.getMediaPlayer();
-
+		
+		//Label to indicate how many characters are remaining
 		lblChars = new JLabel("200/200");
 		lblChars.setForeground(Color.WHITE);
 		lblChars.setBounds(980, 170, 70, 15);
 		contentPane.add(lblChars);
-		//simple text area for the user to enter text
+		//***************************************************************************
+		 
+
+		//********************* panel for video player *******************************
+		playerPanel = new JPanel(new BorderLayout());
+		playerPanel.setBounds(33, 41, 699, 393);
+		contentPane.add(playerPanel);
+		
+		mediaPlayerComponent = new EmbeddedMediaPlayerComponent();
+		video = mediaPlayerComponent.getMediaPlayer();
+		playerPanel.add(mediaPlayerComponent, BorderLayout.CENTER);
+		
+		//*****************simple text area for the user to enter text ******************
 		txtArea = new JTextArea();
 		txtArea.setText("Add Text Here");
 		txtArea.setWrapStyleWord(true);
@@ -347,21 +366,22 @@ public class Player extends JFrame{
 		txtArea.setDocument(docfilt);
 		contentPane.add(txtArea);
 
-		//Allow text area to scroll
+		//****** Scroll pane which allow text area to scroll **************************
 		scrollPane = new JScrollPane(txtArea);
 		scrollPane.setBounds(750, 41, 297, 122);
 		contentPane.add(scrollPane);
+		
+		JLabel textLabel = new JLabel("Enter text for text-to-speech");
+		scrollPane.setColumnHeaderView(textLabel);
 
-		playerPanel.add(mediaPlayerComponent, BorderLayout.CENTER);
-		contentPane.add(playerPanel);
-
-		//video label, changes with user selection
+		//***********video label, changes with user selection ************************
 		videoLabel = new JLabel("No video chosen");
 		videoLabel.setForeground(Color.WHITE);
 		videoLabel.setBounds(228, 14, 506, 15);
 		contentPane.add(videoLabel);
-
-		//button for choosing a video to play
+		//***************************************************************************
+		
+		//*******************button for choosing a video to play**********************
 		btnBrowseVideo = new JButton("Browse Video");
 		btnBrowseVideo.setForeground(SystemColor.text);
 		btnBrowseVideo.setBackground(Color.GRAY);
@@ -381,7 +401,7 @@ public class Player extends JFrame{
 
 					videoLabel.setText(videoFile.getName());
 					
-					ProgressBarDoInBackground bar = new ProgressBarDoInBackground(frame);
+					ProgressBarBG bar = new ProgressBarBG(frame);
 					bar.execute();
 					
 					if (edit.numAudio != 1){
@@ -395,15 +415,16 @@ public class Player extends JFrame{
 		});
 		btnBrowseVideo.setBounds(33, 9, 168, 25);
 		contentPane.add(btnBrowseVideo);
+		//*******************************************************************************
 
-		//label for timer
-
+		//************************ label for timer **************************************
 		timerLabel = new JLabel("0 sec");
 		timerLabel.setForeground(Color.WHITE);
 		timerLabel.setBounds(662, 475, 70, 15);
 		contentPane.add(timerLabel);
-
-		//Volume slider
+		//*******************************************************************************
+		
+		//************************** Volume slider **************************************
 		volSlider = new JSlider();
 		volSlider.setValue(100);
 		volSlider.addChangeListener(new ChangeListener() {
@@ -417,8 +438,9 @@ public class Player extends JFrame{
 		volSlider.setBackground(Color.DARK_GRAY);
 		volSlider.setBounds(444, 470, 200, 25);
 		contentPane.add(volSlider);
-
-		//Progress bar to show how far the video is in, also allow user to drag the bar to move positions in the video
+		//******************************************************************************
+		
+		//**Progress bar to show how far the video is in, also allow user to drag the bar to move positions in the video**
 		vidSlider = new JSlider();
 		vidSlider.addMouseMotionListener(new MouseMotionAdapter() {
 			@Override
@@ -437,23 +459,23 @@ public class Player extends JFrame{
 		vidSlider.setBounds(33, 442, 699, 16);
 		vidSlider.setValue(0);
 		contentPane.add(vidSlider);
+		//********************************************************************************
 		
-		btnEdit = new JButton("Edit Commentary");
+		//*************** Button to open window for eiditing commentary *****************
+		btnEdit = new JButton("Add Audio Files To Merge");
 		btnEdit.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				edit.setVisible(true);
 			}
 		});
 		btnEdit.setForeground(Color.WHITE);
-		btnEdit.setFont(new Font("Dialog", Font.BOLD, 22));
+		btnEdit.setFont(new Font("Dialog", Font.BOLD, 18));
 		btnEdit.setBackground(Color.GRAY);
 		btnEdit.setBounds(750, 244, 297, 78);
 		contentPane.add(btnEdit);
+		//*********************************************************************************
 
-
-
-		//Timer used to check video time
-		
+		//*******************Timer used to check video time********************************
 		Timer t = new Timer(200, new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -465,11 +487,12 @@ public class Player extends JFrame{
 				}
 			}
 		}); 
-		t.start();
-		 
+		t.start();	 
 	}
-
 	
+	/*
+	 * Update the character count
+	 */
 	private void charCount() {
 		//Set a label to indicate how many characters remaining
 		lblChars.setText((200 - docfilt.getLength())+"/200");
@@ -497,6 +520,9 @@ public class Player extends JFrame{
 		return true;
 	}
 
+	/*
+	 * Handles fastforwarding and rewinding
+	 */
 	private void initVidControlThread(final String arg){	                    
 		if (checkAndMark()) {	//don't start another thread if this one is still running
 			new Thread() {
@@ -520,6 +546,4 @@ public class Player extends JFrame{
 			}.start();	
 		}
 	}
-	
-	
 }

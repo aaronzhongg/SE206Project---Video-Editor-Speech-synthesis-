@@ -5,11 +5,11 @@ import java.io.File;
 import javax.swing.JOptionPane;
 import javax.swing.SwingWorker;
 
-public class AddComDoInBackground extends SwingWorker<Void, Void>{
+public class AddCommentaryBG extends SwingWorker<Void, Void>{
 	//Fields include the actual player (for accessing files) and the output name
 	private Player player;
 	private String comOutName;
-	public AddComDoInBackground(Player p, String n){
+	public AddCommentaryBG(Player p, String n){
 		player = p;
 		comOutName = n;
 	}
@@ -25,7 +25,7 @@ public class AddComDoInBackground extends SwingWorker<Void, Void>{
 		}
 
 		//FFMPEG commands to split audio from video, combine the two audios and re attache the audio and video  
-		ProcessBuilder splitter = new ProcessBuilder("/bin/bash", "-c", "ffmpeg -i " + player.videoFile.getAbsolutePath() + audioInfo + " -filter_complex amix=inputs=" + player.edit.numAudio +":duration=first -async 1 temp.mp3");
+		ProcessBuilder splitter = new ProcessBuilder("/bin/bash", "-c", "ffmpeg -i " + player.videoFile.getAbsolutePath() + audioInfo + " -filter_complex amix=inputs=" + player.edit.numAudio +":duration=first -async 1 tempjekjek.mp3");
 		ProcessBuilder combiner = new ProcessBuilder("/bin/bash", "-c", "ffmpeg -i tempjekjek.mp3 -i " + player.videoFile.getAbsolutePath() + " -map 0:a -map 1:v " + comOutName + ".avi");
 
 		Process split = splitter.start();
@@ -39,7 +39,7 @@ public class AddComDoInBackground extends SwingWorker<Void, Void>{
 	protected void done(){
 		//remove the mp3 file that was created
 		try {
-			JOptionPane.showMessageDialog(null, "Merge sucessful");
+			JOptionPane.showMessageDialog(null, "Merge Sucessful", "Merge Sucessful", 1);
 			File del = new File("tempjekjek.mp3");
 			del.delete();
 		} catch (Exception e) {

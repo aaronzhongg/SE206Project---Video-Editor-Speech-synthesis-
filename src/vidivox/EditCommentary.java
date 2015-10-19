@@ -50,7 +50,10 @@ import java.awt.event.InputMethodListener;
 import java.awt.event.InputMethodEvent;
 import javax.swing.SwingConstants;
 import java.awt.Font;
-
+/*
+ * EditCommentary class provides functionality to add and remove multiple audio files for merging
+ * Also allows user to listen to selected audio files
+ */
 public class EditCommentary extends JFrame {
 
 	static EditCommentary aframe;
@@ -61,6 +64,12 @@ public class EditCommentary extends JFrame {
 	protected ArrayList<File> mp3File = new ArrayList<File>();
 	private boolean isPlaying = false;
 	protected int numAudio = 1; //used to keep track of how many audio files added
+	protected final JButton btnAddAudio;
+	protected JButton btnRemoveMp;
+	protected final JButton btnListen;
+	protected JButton btnClose;
+	protected JLabel lblTitle;
+	protected JLabel lblNote;
 
 	/**
 	 * Launch the application.
@@ -87,20 +96,24 @@ public class EditCommentary extends JFrame {
 	 * Create the frame.
 	 */
 	public EditCommentary() {
-
-
-		mediaPlayerComponent = new EmbeddedMediaPlayerComponent();
-		audio = mediaPlayerComponent.getMediaPlayer();
-		setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
-		setBounds(100, 100, 650, 300);
+		
 		contentPane = new JPanel();
 		contentPane.setBackground(Color.DARK_GRAY);
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
+		
+		//MediaPlayerComponent to allow user to listen to added mp3 files
+		mediaPlayerComponent = new EmbeddedMediaPlayerComponent();
+		audio = mediaPlayerComponent.getMediaPlayer();
+		setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
+		setBounds(100, 100, 650, 300);
+		//for vlcj to play mp3
+		contentPane.add(mediaPlayerComponent);
+
 
 		//Allow user to add mp3 files to the commentary list
-		final JButton btnAddAudio = new JButton("Add mp3");
+		btnAddAudio = new JButton("Add mp3");
 		btnAddAudio.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				//create file chooser and filter (mp3)
@@ -134,26 +147,26 @@ public class EditCommentary extends JFrame {
 					if (Player.videoFile != null) {
 						Player.btnAddCom.setEnabled(true);
 					}
-
 				}
-
-
 			}
 		});
 		btnAddAudio.setForeground(Color.WHITE);
 		btnAddAudio.setBackground(Color.GRAY);
 		btnAddAudio.setBounds(30, 200, 150, 50);
 		contentPane.add(btnAddAudio);
-
+		//******************************************************************************
+		
+		
 		//A button to allow users to remove added audio files
-		JButton btnRemoveMp = new JButton("Remove Selected");
+		btnRemoveMp = new JButton("Remove Selected");
 		btnRemoveMp.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				if (audioTable.getSelectedRow() != -1) { //make sure user has actually selected a row
 					if (audioTable.getValueAt(audioTable.getSelectedRow(), 0) != null){ 
 						mp3File.remove(audioTable.getSelectedRow());
 						numAudio--;
-						for (int i = audioTable.getSelectedRow(); i < 7; i++){ //remove the selected row and shift others up
+						//remove the selected row and shift others up
+						for (int i = audioTable.getSelectedRow(); i < 7; i++){ 
 							if (audioTable.getValueAt(i+1, 0) == null){	
 								audioTable.setValueAt(null, i, 0);
 								audioTable.setValueAt(null, i, 1);
@@ -177,10 +190,13 @@ public class EditCommentary extends JFrame {
 		btnRemoveMp.setBackground(Color.GRAY);
 		btnRemoveMp.setBounds(354, 200, 155, 50);
 		contentPane.add(btnRemoveMp);
-
-		final JButton btnListen = new JButton("Listen Selected"); //Allow user to listen to an added mp3
+		//*********************************************************************************
+		
+		//Button to allow user to listen to selected mp3 files
+		btnListen = new JButton("Listen Selected"); 
 		btnListen.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
+				//Find out which mp3 file is selected
 				if(audioTable.getSelectedRow() != -1){
 					if(isPlaying == false && audioTable.getValueAt(audioTable.getSelectedRow(), 0) != null){
 						isPlaying = true;
@@ -188,7 +204,7 @@ public class EditCommentary extends JFrame {
 						btnListen.setText("Stop Listening");	//change button name
 					}	
 					else{
-						//Stop playing the audio file
+						//Stop playing the audio file 
 						isPlaying = false;
 						btnListen.setText("Listen Selected");
 						audio.stop();
@@ -200,9 +216,10 @@ public class EditCommentary extends JFrame {
 		btnListen.setBackground(Color.GRAY);
 		btnListen.setBounds(192, 200, 150, 50);
 		contentPane.add(btnListen);
+		//********************************************************************************
 
 		//close window but keep everything edited in the window
-		JButton btnClose = new JButton("Close");
+		btnClose = new JButton("Close");
 		btnClose.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				setVisible(false);
@@ -211,13 +228,8 @@ public class EditCommentary extends JFrame {
 		btnClose.setBackground(Color.LIGHT_GRAY);
 		btnClose.setBounds(527, 200, 85, 50);
 		contentPane.add(btnClose);
+		//*********************************************************************************
 
-		//for vlcj to play mp3
-		contentPane.add(mediaPlayerComponent);
-
-		JScrollPane scrollPane = new JScrollPane();
-		scrollPane.setBounds(12, 50, 626, 134);
-		contentPane.add(scrollPane);
 
 		//Timer used to check whether a playing audio file has completed 
 		Timer t = new Timer(200, new ActionListener() {
@@ -232,8 +244,11 @@ public class EditCommentary extends JFrame {
 		}); 
 		t.start();
 
-
-		//table to disable all info
+		JScrollPane scrollPane = new JScrollPane();
+		scrollPane.setBounds(12, 50, 626, 134);
+		contentPane.add(scrollPane);
+		
+		//To allow the "Start at" cell to be editable once a audio file is added
 		DefaultTableModel TM = new DefaultTableModel();
 		audioTable = new JTable(TM){
 			@Override
@@ -255,6 +270,7 @@ public class EditCommentary extends JFrame {
 					}
 
 					public void editingStopped(ChangeEvent e) {
+						//if the input is not valid (mm:ss), automatically fix for common inputs, otherwise show message
 						CharSequence check = (CharSequence) audioTable.getValueAt(audioTable.getSelectedRow(), audioTable.getSelectedColumn());
 						if(Pattern.matches("[0-9][0-9]:[0-5][0-9]", check) == false && check.length() > 0){
 							if (Pattern.matches("[0-9]:[0-5][0-9]", check) == true ) {
@@ -269,7 +285,7 @@ public class EditCommentary extends JFrame {
 								audioTable.setValueAt("00:" + check, audioTable.getSelectedRow(), audioTable.getSelectedColumn());
 							} else {
 								audioTable.setValueAt("00:00",audioTable.getSelectedRow(), audioTable.getSelectedColumn());
-								JOptionPane.showMessageDialog(contentPane, "Enter a valid time in the form mm:ss");
+								JOptionPane.showMessageDialog(contentPane, "Enter a valid time in the form mm:ss", "Invalid Input", 0);
 							}
 						}
 					}
@@ -288,6 +304,7 @@ public class EditCommentary extends JFrame {
 				"Mp3 Name", "Start in video at (mm:ss) - Editable"
 			}
 		) {
+			private static final long serialVersionUID = 1L;
 			Class[] columnTypes = new Class[] {
 				Object.class, String.class
 			};
@@ -305,14 +322,21 @@ public class EditCommentary extends JFrame {
 		audioTable.getColumnModel().getColumn(1).setPreferredWidth(197);
 		audioTable.getTableHeader().setReorderingAllowed(false);
 		scrollPane.setViewportView(audioTable);
-
+		//***************************************************************************
+		
 		//title
-		JLabel lblNewLabel = new JLabel("Commentary Editor");
-		lblNewLabel.setFont(new Font("Dialog", Font.BOLD, 22));
-		lblNewLabel.setHorizontalAlignment(SwingConstants.CENTER);
-		lblNewLabel.setForeground(Color.WHITE);
-		lblNewLabel.setBounds(30, 10, 582, 30);
-		contentPane.add(lblNewLabel);
+		lblTitle = new JLabel("Commentary Editor");
+		lblTitle.setFont(new Font("Dialog", Font.BOLD, 22));
+		lblTitle.setHorizontalAlignment(SwingConstants.CENTER);
+		lblTitle.setForeground(Color.WHITE);
+		lblTitle.setBounds(30, 0, 582, 30);
+		contentPane.add(lblTitle);
+		
+		//Note
+		lblNote = new JLabel("NOTE: Audio files with start times greater than length of video file will not merge");
+		lblNote.setForeground(Color.WHITE);
+		lblNote.setBounds(12, 30, 626, 15);
+		contentPane.add(lblNote);
 
 
 	}

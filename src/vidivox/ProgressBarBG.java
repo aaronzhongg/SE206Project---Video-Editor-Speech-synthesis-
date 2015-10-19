@@ -4,10 +4,10 @@ import java.util.List;
 
 import javax.swing.SwingWorker;
 
-public class ProgressBarDoInBackground extends SwingWorker<Void,Float>{
+public class ProgressBarBG extends SwingWorker<Void,Float>{
 	private Player player;
 	
-	public ProgressBarDoInBackground(Player player) {
+	public ProgressBarBG(Player player) {
 		this.player = player;
 	}
 	
