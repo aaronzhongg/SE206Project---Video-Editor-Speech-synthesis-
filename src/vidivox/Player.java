@@ -84,6 +84,17 @@ public class Player extends JFrame{
 	protected JButton btnCreateMp;
 	protected static Player frame;
 	protected JSlider vidSlider;
+	protected JButton btnReverse;
+	protected JButton btnPlay;
+	protected JButton btnFastForward;
+	protected JButton btnMute;
+	protected JPanel playerPanel;
+	protected JScrollPane scrollPane;
+	protected final JLabel videoLabel;
+	protected final JLabel timerLabel;
+	protected JButton btnBrowseVideo;
+	protected final JSlider volSlider;
+	protected JButton btnEdit;
 	protected EditCommentary edit = new EditCommentary();
 	
 	/**
@@ -124,7 +135,7 @@ public class Player extends JFrame{
 		contentPane.setLayout(null);
 
 		//Reverse button
-		JButton btnReverse = new JButton("<<");
+		btnReverse = new JButton("<<");
 		btnReverse.setForeground(SystemColor.text);
 		btnReverse.setBackground(Color.GRAY);
 		btnReverse.addMouseListener(new MouseAdapter() {
@@ -147,7 +158,7 @@ public class Player extends JFrame{
 		contentPane.add(btnReverse);
 
 		//Play and pause button
-		JButton btnPlay = new JButton("Play/Pause");
+		btnPlay = new JButton("Play/Pause");
 		btnPlay.setForeground(SystemColor.text);
 		btnPlay.setBackground(Color.GRAY);
 		btnPlay.addActionListener(new ActionListener() {
@@ -164,7 +175,7 @@ public class Player extends JFrame{
 		contentPane.add(btnPlay);
 
 		//fastforward button
-		JButton btnFastForward = new JButton(">>");
+		btnFastForward = new JButton(">>");
 		btnFastForward.setForeground(SystemColor.text);
 		btnFastForward.setBackground(Color.GRAY);
 
@@ -213,7 +224,7 @@ public class Player extends JFrame{
 		});
 
 		//Simple mute button
-		JButton btnMute = new JButton("Mute");
+		btnMute = new JButton("Mute");
 		btnMute.setForeground(SystemColor.text);
 		btnMute.setBackground(Color.GRAY);
 		btnMute.addActionListener(new ActionListener() {
@@ -315,7 +326,7 @@ public class Player extends JFrame{
 		contentPane.add(btnAddCom);
 
 		//panel for video player
-		JPanel playerPanel = new JPanel(new BorderLayout());
+		playerPanel = new JPanel(new BorderLayout());
 		playerPanel.setBounds(33, 41, 699, 393);
 		mediaPlayerComponent = new EmbeddedMediaPlayerComponent();
 		video = mediaPlayerComponent.getMediaPlayer();
@@ -337,7 +348,7 @@ public class Player extends JFrame{
 		contentPane.add(txtArea);
 
 		//Allow text area to scroll
-		JScrollPane scrollPane = new JScrollPane(txtArea);
+		scrollPane = new JScrollPane(txtArea);
 		scrollPane.setBounds(750, 41, 297, 122);
 		contentPane.add(scrollPane);
 
@@ -345,13 +356,13 @@ public class Player extends JFrame{
 		contentPane.add(playerPanel);
 
 		//video label, changes with user selection
-		final JLabel videoLabel = new JLabel("No video chosen");
+		videoLabel = new JLabel("No video chosen");
 		videoLabel.setForeground(Color.WHITE);
 		videoLabel.setBounds(228, 14, 506, 15);
 		contentPane.add(videoLabel);
 
 		//button for choosing a video to play
-		JButton btnBrowseVideo = new JButton("Browse Video");
+		btnBrowseVideo = new JButton("Browse Video");
 		btnBrowseVideo.setForeground(SystemColor.text);
 		btnBrowseVideo.setBackground(Color.GRAY);
 		btnBrowseVideo.addActionListener(new ActionListener() {
@@ -387,13 +398,13 @@ public class Player extends JFrame{
 
 		//label for timer
 
-		final JLabel timerLabel = new JLabel("0 sec");
+		timerLabel = new JLabel("0 sec");
 		timerLabel.setForeground(Color.WHITE);
 		timerLabel.setBounds(662, 475, 70, 15);
 		contentPane.add(timerLabel);
 
 		//Volume slider
-		final JSlider volSlider = new JSlider();
+		volSlider = new JSlider();
 		volSlider.setValue(100);
 		volSlider.addChangeListener(new ChangeListener() {
 			public void stateChanged(ChangeEvent arg0) {
@@ -427,17 +438,17 @@ public class Player extends JFrame{
 		vidSlider.setValue(0);
 		contentPane.add(vidSlider);
 		
-		JButton btnNewButton = new JButton("Edit Commentary");
-		btnNewButton.addActionListener(new ActionListener() {
+		btnEdit = new JButton("Edit Commentary");
+		btnEdit.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				edit.setVisible(true);
 			}
 		});
-		btnNewButton.setForeground(Color.WHITE);
-		btnNewButton.setFont(new Font("Dialog", Font.BOLD, 22));
-		btnNewButton.setBackground(Color.GRAY);
-		btnNewButton.setBounds(750, 244, 297, 78);
-		contentPane.add(btnNewButton);
+		btnEdit.setForeground(Color.WHITE);
+		btnEdit.setFont(new Font("Dialog", Font.BOLD, 22));
+		btnEdit.setBackground(Color.GRAY);
+		btnEdit.setBounds(750, 244, 297, 78);
+		contentPane.add(btnEdit);
 
 
 
@@ -458,6 +469,7 @@ public class Player extends JFrame{
 		 
 	}
 
+	
 	private void charCount() {
 		//Set a label to indicate how many characters remaining
 		lblChars.setText((200 - docfilt.getLength())+"/200");
@@ -508,4 +520,6 @@ public class Player extends JFrame{
 			}.start();	
 		}
 	}
+	
+	
 }
