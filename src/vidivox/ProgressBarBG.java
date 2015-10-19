@@ -5,9 +5,9 @@ import java.util.List;
 import javax.swing.SwingWorker;
 
 public class ProgressBarBG extends SwingWorker<Void,Float>{
-	private Player player;
+	private PlayerMedia player;
 	
-	public ProgressBarBG(Player player) {
+	public ProgressBarBG(PlayerMedia player) {
 		this.player = player;
 	}
 	

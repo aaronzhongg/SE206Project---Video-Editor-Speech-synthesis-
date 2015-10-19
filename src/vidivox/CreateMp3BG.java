@@ -8,12 +8,12 @@ import java.net.URISyntaxException;
 import javax.swing.JOptionPane;
 import javax.swing.SwingWorker;
 
-import vidivox.Player;
+import vidivox.PlayerMedia;
 public class CreateMp3BG extends SwingWorker<Void,Void> {
 	private String output;
-	private Player player;
+	private PlayerMedia player;
 	
-	public CreateMp3BG(Player p, String output){
+	public CreateMp3BG(PlayerMedia p, String output){
 		this.output = output;
 		this.player = p;
 	}
@@ -22,7 +22,7 @@ public class CreateMp3BG extends SwingWorker<Void,Void> {
 	protected Void doInBackground() throws Exception {
 		if (output != null){
 			//create mp3 file
-			ProcessBuilder makeWav = new ProcessBuilder("/bin/bash", "-c", "echo " + Player.frame.txtArea.getText() + " | text2wave -o " + output +".wav");
+			ProcessBuilder makeWav = new ProcessBuilder("/bin/bash", "-c", "echo " + PlayerSideBar.txtArea.getText() + " | text2wave -o " + output +".wav");
 			ProcessBuilder convert = new ProcessBuilder("/bin/bash", "-c", "ffmpeg -y -i " + output + ".wav -f mp3 "+ output+".mp3");
 			try {
 				Process process = makeWav.start();

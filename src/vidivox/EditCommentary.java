@@ -84,6 +84,7 @@ public class EditCommentary extends JFrame {
 			public void run() {
 				try {
 					aframe = new EditCommentary();
+					aframe.setTitle("YEEDITOR");
 					aframe.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -144,8 +145,8 @@ public class EditCommentary extends JFrame {
 					}
 
 					//if a video file is selected in main menu, enable the add commentary button
-					if (Player.videoFile != null) {
-						Player.btnAddCom.setEnabled(true);
+					if (PlayerMedia.videoFile != null) {
+						PlayerSideBar.btnAddCom.setEnabled(true);
 					}
 				}
 			}
@@ -178,10 +179,10 @@ public class EditCommentary extends JFrame {
 						}
 
 					}
-
+					
+					//if everything is removed, disable add commentary button
 					if (audioTable.getValueAt(0, 0) == null) {
-						Player.btnAddCom.setEnabled(false); //if everything is removed, disable add commentary button
-
+						PlayerSideBar.btnAddCom.setEnabled(false); 
 					}
 				} 
 			}

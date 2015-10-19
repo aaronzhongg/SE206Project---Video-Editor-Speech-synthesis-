@@ -5,15 +5,15 @@ import java.io.IOException;
 import javax.swing.SwingWorker;
 
 public class ListenBG extends SwingWorker<Void, Void>{
-	private Player player;
+	private PlayerMedia player;
 	
-	public ListenBG(Player p){
+	public ListenBG(PlayerMedia p){
 		player = p;
 	}
 	@Override
 	protected Void doInBackground() throws Exception {
 		//run festival in bash from the entered text
-		ProcessBuilder builder = new ProcessBuilder("/bin/bash", "-c", "echo " + player.txtArea.getText() + " | festival --tts");
+		ProcessBuilder builder = new ProcessBuilder("/bin/bash", "-c", "echo " + PlayerSideBar.txtArea.getText() + " | festival --tts");
 
 		try {
 			//begin process and wait for process to complete
@@ -28,6 +28,6 @@ public class ListenBG extends SwingWorker<Void, Void>{
 	//after speech is done, re enable listen button
 	@Override
 	protected void done(){
-		player.btnListen.setEnabled(true);
+		PlayerSideBar.btnListen.setEnabled(true);
 	}
 }
