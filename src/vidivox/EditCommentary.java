@@ -117,38 +117,7 @@ public class EditCommentary extends JFrame {
 		btnAddAudio = new JButton("Add mp3");
 		btnAddAudio.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				//create file chooser and filter (mp3)
-				final JFileChooser fileChooser = new JFileChooser();
-				fileChooser.setAcceptAllFileFilterUsed(false);
-				FileFilter filter = new FileNameExtensionFilter("mp3 files", new String[] {"mp3","MP3"});
-				fileChooser.setFileFilter(filter);
-				int returnVal = fileChooser.showOpenDialog(new JFrame());
-
-				if(returnVal == JFileChooser.APPROVE_OPTION){
-
-					numAudio++;
-					mp3File.add(fileChooser.getSelectedFile());
-
-					//After a audio file is selected add its name to the table and set a default start time as 0s
-					int i;
-					for (i = 0; i < 7 ; i ++){
-						if (audioTable.getValueAt(i,0) == null) { 
-							audioTable.setValueAt(mp3File.get(mp3File.size() - 1).getName(), i , 0);
-							audioTable.setValueAt("00:00", i, 1);
-							break;
-						}
-					}
-
-					//if the list is full (max 7 audio files) then disable the add audio button to prevent user from adding more
-					if (audioTable.getValueAt(6, 0) != null) {
-						btnAddAudio.setEnabled(false);
-					}
-
-					//if a video file is selected in main menu, enable the add commentary button
-					if (PlayerMedia.videoFile != null) {
-						PlayerSideBar.btnAddCom.setEnabled(true);
-					}
-				}
+				ChooseMp();
 			}
 		});
 		btnAddAudio.setForeground(Color.WHITE);
@@ -162,29 +131,7 @@ public class EditCommentary extends JFrame {
 		btnRemoveMp = new JButton("Remove Selected");
 		btnRemoveMp.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				if (audioTable.getSelectedRow() != -1) { //make sure user has actually selected a row
-					if (audioTable.getValueAt(audioTable.getSelectedRow(), 0) != null){ 
-						mp3File.remove(audioTable.getSelectedRow());
-						numAudio--;
-						//remove the selected row and shift others up
-						for (int i = audioTable.getSelectedRow(); i < 7; i++){ 
-							if (audioTable.getValueAt(i+1, 0) == null){	
-								audioTable.setValueAt(null, i, 0);
-								audioTable.setValueAt(null, i, 1);
-								break;
-							}
-							for (int j = 0; j < 2; j ++) {
-								audioTable.setValueAt(audioTable.getValueAt(i+1, j), i, j);
-							}
-						}
-
-					}
-					
-					//if everything is removed, disable add commentary button
-					if (audioTable.getValueAt(0, 0) == null) {
-						PlayerSideBar.btnAddCom.setEnabled(false); 
-					}
-				} 
+				Remover(); 
 			}
 		});
 		btnRemoveMp.setForeground(Color.WHITE);
@@ -197,20 +144,7 @@ public class EditCommentary extends JFrame {
 		btnListen = new JButton("Listen Selected"); 
 		btnListen.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				//Find out which mp3 file is selected
-				if(audioTable.getSelectedRow() != -1){
-					if(isPlaying == false && audioTable.getValueAt(audioTable.getSelectedRow(), 0) != null){
-						isPlaying = true;
-						audio.playMedia(mp3File.get(audioTable.getSelectedRow()).getAbsolutePath());
-						btnListen.setText("Stop Listening");	//change button name
-					}	
-					else{
-						//Stop playing the audio file 
-						isPlaying = false;
-						btnListen.setText("Listen Selected");
-						audio.stop();
-					}
-				}
+				ListenPls();
 			}
 		});
 		btnListen.setForeground(Color.WHITE);
@@ -271,24 +205,7 @@ public class EditCommentary extends JFrame {
 					}
 
 					public void editingStopped(ChangeEvent e) {
-						//if the input is not valid (mm:ss), automatically fix for common inputs, otherwise show message
-						CharSequence check = (CharSequence) audioTable.getValueAt(audioTable.getSelectedRow(), audioTable.getSelectedColumn());
-						if(Pattern.matches("[0-9][0-9]:[0-5][0-9]", check) == false && check.length() > 0){
-							if (Pattern.matches("[0-9]:[0-5][0-9]", check) == true ) {
-								audioTable.setValueAt("0" + check, audioTable.getSelectedRow(), audioTable.getSelectedColumn());
-							} else if (Pattern.matches("[0-9]:[0-9]", check) == true) {	
-								audioTable.setValueAt("0" + check.charAt(0) + ":" + "0" + check.charAt(2), audioTable.getSelectedRow(), audioTable.getSelectedColumn());
-							} else if (Pattern.matches("[0-9][0-9]:[0-9]", check) == true) {	
-								audioTable.setValueAt(check.charAt(0) + check.charAt(1) + ":0" + check.charAt(2) , audioTable.getSelectedRow(), audioTable.getSelectedColumn());
-							} else if (Pattern.matches("[0-9]", check) == true) {
-								audioTable.setValueAt("00:0" + check, audioTable.getSelectedRow(), audioTable.getSelectedColumn());
-							} else if (Pattern.matches("[0-5][0-9]", check) == true) {
-								audioTable.setValueAt("00:" + check, audioTable.getSelectedRow(), audioTable.getSelectedColumn());
-							} else {
-								audioTable.setValueAt("00:00",audioTable.getSelectedRow(), audioTable.getSelectedColumn());
-								JOptionPane.showMessageDialog(contentPane, "Enter a valid time in the form mm:ss", "Invalid Input", 0);
-							}
-						}
+						Checkerino();
 					}
 				});
 		audioTable.setModel(new DefaultTableModel(
@@ -338,7 +255,112 @@ public class EditCommentary extends JFrame {
 		lblNote.setForeground(Color.WHITE);
 		lblNote.setBounds(12, 30, 626, 15);
 		contentPane.add(lblNote);
+	}
+	
+	/*
+	 * This method takes care of the choosing of mp3 files
+	 */
+	private void ChooseMp(){
+		//create file chooser and filter (mp3)
+		final JFileChooser fileChooser = new JFileChooser();
+		fileChooser.setAcceptAllFileFilterUsed(false);
+		FileFilter filter = new FileNameExtensionFilter("mp3 files", new String[] {"mp3","MP3"});
+		fileChooser.setFileFilter(filter);
+		int returnVal = fileChooser.showOpenDialog(new JFrame());
 
+		if(returnVal == JFileChooser.APPROVE_OPTION){
+			numAudio++;
+			mp3File.add(fileChooser.getSelectedFile());
+			//After a audio file is selected add its name to the table and set a default start time as 0s
+			int i;
+			for (i = 0; i < 7 ; i ++){
+				if (audioTable.getValueAt(i,0) == null) { 
+					audioTable.setValueAt(mp3File.get(mp3File.size() - 1).getName(), i , 0);
+					audioTable.setValueAt("00:00", i, 1);
+					break;
+				}
+			}
 
+			//if the list is full (max 7 audio files) then disable the add audio button to prevent user from adding more
+			if (audioTable.getValueAt(6, 0) != null) {
+				btnAddAudio.setEnabled(false);
+			}
+
+			//if a video file is selected in main menu, enable the add commentary button
+			if (PlayerMedia.videoFile != null) {
+				PlayerSideBar.btnAddCom.setEnabled(true);
+			}
+		}
+	}
+	
+	/*
+	 * Checker for valid input
+	 */
+	private void Checkerino(){
+		//if the input is not valid (mm:ss), automatically fix for common inputs, otherwise show message
+		CharSequence check = (CharSequence) audioTable.getValueAt(audioTable.getSelectedRow(), audioTable.getSelectedColumn());
+		if(Pattern.matches("[0-9][0-9]:[0-5][0-9]", check) == false && check.length() > 0){
+			if (Pattern.matches("[0-9]:[0-5][0-9]", check) == true ) {
+				audioTable.setValueAt("0" + check, audioTable.getSelectedRow(), audioTable.getSelectedColumn());
+			} else if (Pattern.matches("[0-9]:[0-9]", check) == true) {	
+				audioTable.setValueAt("0" + check.charAt(0) + ":" + "0" + check.charAt(2), audioTable.getSelectedRow(), audioTable.getSelectedColumn());
+			} else if (Pattern.matches("[0-9][0-9]:[0-9]", check) == true) {	
+				audioTable.setValueAt(check.charAt(0) + check.charAt(1) + ":0" + check.charAt(2) , audioTable.getSelectedRow(), audioTable.getSelectedColumn());
+			} else if (Pattern.matches("[0-9]", check) == true) {
+				audioTable.setValueAt("00:0" + check, audioTable.getSelectedRow(), audioTable.getSelectedColumn());
+			} else if (Pattern.matches("[0-5][0-9]", check) == true) {
+				audioTable.setValueAt("00:" + check, audioTable.getSelectedRow(), audioTable.getSelectedColumn());
+			} else {
+				audioTable.setValueAt("00:00",audioTable.getSelectedRow(), audioTable.getSelectedColumn());
+				JOptionPane.showMessageDialog(contentPane, "Enter a valid time in the form mm:ss", "Invalid Input", 0);
+			}
+		}
+	}
+	
+	/*
+	 * Allow listen to selected mp3
+	 */
+	private void ListenPls(){
+		//Find out which mp3 file is selected
+		if(audioTable.getSelectedRow() != -1){
+			if(isPlaying == false && audioTable.getValueAt(audioTable.getSelectedRow(), 0) != null){
+				isPlaying = true;
+				audio.playMedia(mp3File.get(audioTable.getSelectedRow()).getAbsolutePath());
+				btnListen.setText("Stop Listening");	//change button name
+			}	
+			else{
+				//Stop playing the audio file 
+				isPlaying = false;
+				btnListen.setText("Listen Selected");
+				audio.stop();
+			}
+		}
+	}
+	
+	/*
+	 * Remove files from list
+	 */
+	private void Remover(){
+		if (audioTable.getSelectedRow() != -1) { //make sure user has actually selected a row
+			if (audioTable.getValueAt(audioTable.getSelectedRow(), 0) != null){ 
+				mp3File.remove(audioTable.getSelectedRow());
+				numAudio--;
+				//remove the selected row and shift others up
+				for (int i = audioTable.getSelectedRow(); i < 7; i++){ 
+					if (audioTable.getValueAt(i+1, 0) == null){	
+						audioTable.setValueAt(null, i, 0);
+						audioTable.setValueAt(null, i, 1);
+						break;
+					}
+					for (int j = 0; j < 2; j ++) {
+						audioTable.setValueAt(audioTable.getValueAt(i+1, j), i, j);
+					}
+				}
+			}	
+			//if everything is removed, disable add commentary button
+			if (audioTable.getValueAt(0, 0) == null) {
+				PlayerSideBar.btnAddCom.setEnabled(false); 
+			}
+		}
 	}
 }

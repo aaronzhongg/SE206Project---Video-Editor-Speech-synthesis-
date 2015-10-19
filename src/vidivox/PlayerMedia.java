@@ -5,26 +5,16 @@ import java.awt.EventQueue;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
-import javax.swing.border.EmptyBorder;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
-import javax.swing.text.DefaultStyledDocument;
 import javax.swing.JButton;
-import javax.swing.JOptionPane;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
-import javax.swing.SwingUtilities;
-import javax.swing.SwingWorker;
 import javax.swing.event.*;
 import javax.swing.Timer;
 
-import java.awt.Font;
-
 import uk.co.caprica.vlcj.binding.LibVlc;
-import uk.co.caprica.vlcj.binding.internal.libvlc_media_t;
 import uk.co.caprica.vlcj.component.EmbeddedMediaPlayerComponent;
-import uk.co.caprica.vlcj.player.MediaPlayer;
-import uk.co.caprica.vlcj.player.MediaPlayerEventListener;
 import uk.co.caprica.vlcj.player.embedded.EmbeddedMediaPlayer;
 import uk.co.caprica.vlcj.runtime.RuntimeUtil;
 
@@ -36,26 +26,10 @@ import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
-
-import javax.swing.JTextArea;
-
-
 import java.awt.Color;
 import java.awt.SystemColor;
 
-import javax.swing.UIManager;
-import javax.swing.JScrollPane;
 import javax.swing.JSlider;
-import javax.swing.border.SoftBevelBorder;
-import javax.swing.border.BevelBorder;
-import javax.swing.border.MatteBorder;
-import javax.swing.border.EtchedBorder;
 import javax.swing.border.TitledBorder;
 import javax.swing.border.LineBorder;
 
@@ -120,9 +94,7 @@ public class PlayerMedia extends JFrame{
 		});
 	}
 
-
 	//Main menu frame, contains most of the GUI and the media player
-
 	public PlayerMedia() {
 		
 		setResizable(false);
@@ -134,7 +106,6 @@ public class PlayerMedia extends JFrame{
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
 
-		
 		// ************** Rewind button ******************
 		btnReverse = new JButton("<<");
 		btnReverse.setForeground(SystemColor.text);
@@ -158,7 +129,6 @@ public class PlayerMedia extends JFrame{
 			}
 		});
 		contentPane.add(btnReverse);
-		// **************************************************************
 		
 		//**************** Play and pause button **************************
 		btnPlay = new JButton("Play/Pause");
@@ -178,7 +148,6 @@ public class PlayerMedia extends JFrame{
 		});
 		btnPlay.setBounds(112, 470, 117, 25);
 		contentPane.add(btnPlay);
-		//*****************************************************************
 		
 		//********************* fastforward button ************************
 		btnFastForward = new JButton(">>");
@@ -205,9 +174,7 @@ public class PlayerMedia extends JFrame{
 		});
 		btnFastForward.setBounds(241, 470, 70, 25);
 		contentPane.add(btnFastForward);
-		//******************************************************************
-
-
+		
 		//******************* Simple mute button ***************************
 		btnMute = new JButton("Mute");
 		btnMute.setForeground(SystemColor.text);
@@ -219,7 +186,6 @@ public class PlayerMedia extends JFrame{
 		});
 		btnMute.setBounds(323, 470, 70, 25);
 		contentPane.add(btnMute);
-		//*******************************************************************
 		
 		//********************* panel for video player *******************************
 		playerPanel = new JPanel(new BorderLayout());
@@ -235,7 +201,6 @@ public class PlayerMedia extends JFrame{
 		videoLabel.setForeground(Color.WHITE);
 		videoLabel.setBounds(228, 14, 506, 15);
 		contentPane.add(videoLabel);
-		//***************************************************************************
 		
 		//*******************button for choosing a video to play**********************
 		btnBrowseVideo = new JButton("Browse Video");
@@ -243,42 +208,17 @@ public class PlayerMedia extends JFrame{
 		btnBrowseVideo.setBackground(Color.GRAY);
 		btnBrowseVideo.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				//Add file chooser as well as set a filter so that user only picks avi
-				final JFileChooser fileChooser = new JFileChooser();
-				fileChooser.setAcceptAllFileFilterUsed(false);
-				FileFilter filter = new FileNameExtensionFilter("Video files (avi)", new String[] {"avi", "AVI"});
-				fileChooser.setFileFilter(filter); 
-				int returnVal = fileChooser.showOpenDialog(new JFrame());
-
-				if(returnVal == JFileChooser.APPROVE_OPTION){
-					//play the file chosen
-					videoFile = fileChooser.getSelectedFile();
-					video.playMedia(videoFile.getAbsolutePath());
-
-					videoLabel.setText(videoFile.getName());
-					
-					ProgressBarBG bar = new ProgressBarBG(frame);
-					bar.execute();
-					
-					if (PlayerSideBar.edit.numAudio != 1){
-						PlayerSideBar.btnAddCom.setEnabled(true);
-					}
-
-				}
-
-
+				ChooseVid();
 			}
 		});
 		btnBrowseVideo.setBounds(33, 9, 168, 25);
 		contentPane.add(btnBrowseVideo);
-		//*******************************************************************************
-
+		
 		//************************ label for timer **************************************
 		timerLabel = new JLabel("0 sec");
 		timerLabel.setForeground(Color.WHITE);
 		timerLabel.setBounds(662, 475, 70, 15);
 		contentPane.add(timerLabel);
-		//*******************************************************************************
 		
 		//************************** Volume slider **************************************
 		volSlider = new JSlider();
@@ -302,7 +242,6 @@ public class PlayerMedia extends JFrame{
 		volSlider.setBackground(Color.DARK_GRAY);
 		volSlider.setBounds(444, 470, 200, 25);
 		contentPane.add(volSlider);
-		//******************************************************************************
 		
 		//**Progress bar to show how far the video is in, also allow user to drag the bar to move positions in the video**
 		vidSlider = new JSlider();
@@ -334,18 +273,12 @@ public class PlayerMedia extends JFrame{
 		vidSlider.setBounds(33, 442, 699, 16);
 		vidSlider.setValue(0);
 		contentPane.add(vidSlider);
-		//********************************************************************************
 		
 		//*******************Timer used to check video time********************************
 		Timer t = new Timer(200, new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				if(video.getMediaPlayerState().toString().equalsIgnoreCase("libvlc_Ended")){
-					timerLabel.setText("End of Video");	//check for end of video
-					//This doesn't actually display, timer refreshes to 0
-				}else{
-					timerLabel.setText((video.getTime()/1000)+ " sec");	//get video time
-				}
+				UpdateTime();
 			}
 		}); 
 		t.start();	 
@@ -390,4 +323,43 @@ public class PlayerMedia extends JFrame{
 			}.start();	
 		}
 	}
+	
+	/*
+	 * This method provides functionality to select an avi file
+	 */
+	private void ChooseVid(){
+		//Add file chooser as well as set a filter so that user only picks avi
+		final JFileChooser fileChooser = new JFileChooser();
+		fileChooser.setAcceptAllFileFilterUsed(false);
+		FileFilter filter = new FileNameExtensionFilter("Video files (avi)", new String[] {"avi", "AVI"});
+		fileChooser.setFileFilter(filter); 
+		int returnVal = fileChooser.showOpenDialog(new JFrame());
+
+		if(returnVal == JFileChooser.APPROVE_OPTION){
+			//play the file chosen
+			videoFile = fileChooser.getSelectedFile();
+			video.playMedia(videoFile.getAbsolutePath());
+			videoLabel.setText(videoFile.getName());
+			ProgressBarBG bar = new ProgressBarBG(frame);
+			bar.execute();
+			
+			//If an mp3 and video file is selected, enable the merge button
+			if (PlayerSideBar.edit.numAudio != 1){
+				PlayerSideBar.btnAddCom.setEnabled(true);
+			}
+		}
+	}
+	
+	/*
+	 * This method updates the progress bar
+	 */
+	private void UpdateTime(){
+		if(video.getMediaPlayerState().toString().equalsIgnoreCase("libvlc_Ended")){
+			timerLabel.setText("End of Video");	//check for end of video
+			//This doesn't actually display, timer refreshes to 0
+		}else{
+			timerLabel.setText((video.getTime()/1000)+ " sec");	//get video time
+		}
+	}
+	
 }

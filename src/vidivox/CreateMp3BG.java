@@ -1,14 +1,17 @@
 package vidivox;
 
 import java.io.File;
+
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.file.FileSystem;
 
 import javax.swing.JOptionPane;
 import javax.swing.SwingWorker;
 
 import vidivox.PlayerMedia;
+
 public class CreateMp3BG extends SwingWorker<Void,Void> {
 	private String output;
 	private PlayerMedia player;
@@ -23,7 +26,7 @@ public class CreateMp3BG extends SwingWorker<Void,Void> {
 		if (output != null){
 			//create mp3 file
 			ProcessBuilder makeWav = new ProcessBuilder("/bin/bash", "-c", "echo " + PlayerSideBar.txtArea.getText() + " | text2wave -o " + output +".wav");
-			ProcessBuilder convert = new ProcessBuilder("/bin/bash", "-c", "ffmpeg -y -i " + output + ".wav -f mp3 "+ output+".mp3");
+			ProcessBuilder convert = new ProcessBuilder("/bin/bash", "-c", "ffmpeg -y -i " + output + ".wav -f mp3 "+output+".mp3");
 			try {
 				Process process = makeWav.start();
 				process.waitFor();

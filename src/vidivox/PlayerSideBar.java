@@ -65,18 +65,17 @@ public class PlayerSideBar {
 				//ask user to enter desired output name
 				final String output = JOptionPane.showInputDialog(null,"Enter Mp3 Name: ");
 				File f = new File(output+".mp3");
+				
 				if (output != null && output.length() > 0){
 					if(f.exists() && !f.isDirectory()) { 
 						//ask if user would want to overwrite existing file
 						int reply = JOptionPane.showConfirmDialog(null, "File already exists, overwrite?", "Overwrite?", JOptionPane.YES_NO_OPTION);
 						if (reply == JOptionPane.YES_OPTION){
 							CreateMp3BG maker = new CreateMp3BG(frame, output);
-
 							maker.execute();
 						}
 					} else {
 						CreateMp3BG maker = new CreateMp3BG(frame, output);
-
 						maker.execute();
 					}
 				}
