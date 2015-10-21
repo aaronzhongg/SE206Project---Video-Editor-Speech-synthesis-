@@ -173,6 +173,7 @@ public class EditCommentary extends JFrame {
 				if(!audio.isPlaying()){
 					btnListen.setText("Listen Selected");
 					isPlaying = false;
+					btnRemoveMp.setEnabled(true);
 
 				}
 			}
@@ -302,10 +303,6 @@ public class EditCommentary extends JFrame {
 		if(Pattern.matches("[0-9][0-9]:[0-5][0-9]", check) == false && check.length() > 0){
 			if (Pattern.matches("[0-9]:[0-5][0-9]", check) == true ) {
 				audioTable.setValueAt("0" + check, audioTable.getSelectedRow(), audioTable.getSelectedColumn());
-			} else if (Pattern.matches("[0-9]:[0-9]", check) == true) {	
-				audioTable.setValueAt("0" + check.charAt(0) + ":" + "0" + check.charAt(2), audioTable.getSelectedRow(), audioTable.getSelectedColumn());
-			} else if (Pattern.matches("[0-9][0-9]:[0-9]", check) == true) {	
-				audioTable.setValueAt(check.charAt(0) + check.charAt(1) + ":0" + check.charAt(2) , audioTable.getSelectedRow(), audioTable.getSelectedColumn());
 			} else if (Pattern.matches("[0-9]", check) == true) {
 				audioTable.setValueAt("00:0" + check, audioTable.getSelectedRow(), audioTable.getSelectedColumn());
 			} else if (Pattern.matches("[0-5][0-9]", check) == true) {
@@ -324,12 +321,14 @@ public class EditCommentary extends JFrame {
 		//Find out which mp3 file is selected
 		if(audioTable.getSelectedRow() != -1){
 			if(isPlaying == false && audioTable.getValueAt(audioTable.getSelectedRow(), 0) != null){
+				btnRemoveMp.setEnabled(false);
 				isPlaying = true;
 				audio.playMedia(mp3File.get(audioTable.getSelectedRow()).getAbsolutePath());
 				btnListen.setText("Stop Listening");	//change button name
 			}	
 			else{
 				//Stop playing the audio file 
+				btnRemoveMp.setEnabled(true);
 				isPlaying = false;
 				btnListen.setText("Listen Selected");
 				audio.stop();

@@ -15,7 +15,7 @@ import vidivox.PlayerMedia;
 public class CreateMp3BG extends SwingWorker<Void,Void> {
 	private String output;
 	private PlayerMedia player;
-	
+
 	public CreateMp3BG(PlayerMedia p, String output){
 		this.output = output;
 		this.player = p;
@@ -25,10 +25,11 @@ public class CreateMp3BG extends SwingWorker<Void,Void> {
 	protected Void doInBackground() throws Exception {
 		if (output != null){
 			//create mp3 file
-			ProcessBuilder makeWav = new ProcessBuilder("/bin/bash", "-c", "echo " + PlayerSideBar.txtArea.getText() + " | text2wave -o " + output +".wav");
-			ProcessBuilder convert = new ProcessBuilder("/bin/bash", "-c", "ffmpeg -y -i " + output + ".wav -f mp3 "+output+".mp3");
+			ProcessBuilder makeWav = new ProcessBuilder("/bin/bash", "-c", "echo " + PlayerSideBar.txtArea.getText() + " | text2wave -o "+ output +".wav");
+			ProcessBuilder convert = new ProcessBuilder("/bin/bash", "-c", "ffmpeg -y -i " + output + ".wav -f mp3 " + output+".mp3");
 			try {
 				Process process = makeWav.start();
+
 				process.waitFor();
 				Process converse = convert.start();
 				converse.waitFor();
@@ -47,7 +48,7 @@ public class CreateMp3BG extends SwingWorker<Void,Void> {
 
 		//remove the wav file that was created
 		try {
-			JOptionPane.showMessageDialog(null, "Sucessfully created text-to-speech mp3", "Sucess", 1);
+			JOptionPane.showMessageDialog(null, "Sucessfully saved mp3 to home directory", "Sucess", 1);
 			File del = new File(output+".wav");
 			del.delete();
 		} catch (Exception e) {
