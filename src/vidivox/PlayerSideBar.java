@@ -65,7 +65,7 @@ public class PlayerSideBar {
 				//ask user to enter desired output name
 				final String output = JOptionPane.showInputDialog(null,"Enter Mp3 Name: ");
 				File f = new File(output+".mp3");
-				
+
 				if (output != null && output.length() > 0){
 					if(f.exists() && !f.isDirectory()) { 
 						//ask if user would want to overwrite existing file
@@ -99,20 +99,22 @@ public class PlayerSideBar {
 				final String comOutName = JOptionPane.showInputDialog("Enter New Video Name: ");
 				File f = new File(comOutName+".avi");
 
-				if(f.exists() && !f.isDirectory()) { 
-					//ask if user would want to overwrite existing file
-					int reply = JOptionPane.showConfirmDialog(null, "File already exists, overwrite?", "Overwrite?", JOptionPane.YES_NO_OPTION);
+				if (comOutName != null && comOutName.length() > 0){
+					if(f.exists() && !f.isDirectory()) { 
+						//ask if user would want to overwrite existing file
+						int reply = JOptionPane.showConfirmDialog(null, "File already exists, overwrite?", "Overwrite?", JOptionPane.YES_NO_OPTION);
 
-					if (reply == JOptionPane.YES_OPTION){
+						if (reply == JOptionPane.YES_OPTION){
+							//generate swingworker instance
+							AddCommentaryBG adder = new AddCommentaryBG(frame, comOutName);
+							adder.execute();
+						}
+
+					} else {
 						//generate swingworker instance
 						AddCommentaryBG adder = new AddCommentaryBG(frame, comOutName);
 						adder.execute();
 					}
-
-				} else {
-					//generate swingworker instance
-					AddCommentaryBG adder = new AddCommentaryBG(frame, comOutName);
-					adder.execute();
 				}
 
 

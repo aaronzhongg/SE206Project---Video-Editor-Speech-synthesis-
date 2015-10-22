@@ -97,6 +97,7 @@ public class EditCommentary extends JFrame {
 	 * Create the frame.
 	 */
 	public EditCommentary() {
+		setTitle("Editor");
 		
 		contentPane = new JPanel();
 		contentPane.setBackground(Color.DARK_GRAY);
